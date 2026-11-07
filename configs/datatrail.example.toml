@@ -22,10 +22,13 @@ type = "chroma"
 persist_path = "pilot/data/datatrail"
 
 [[models.llms]]
-name = "${env:LLM_MODEL_NAME:-deepseek-v4-pro}"
+name = "${env:LLM_MODEL_NAME:-deepseek-flash}"
 provider = "${env:LLM_MODEL_PROVIDER:-proxy/deepseek}"
 api_base = "${env:OPENAI_API_BASE:-https://api.deepseek.com/v1}"
 api_key = "${env:OPENAI_API_KEY}"
+# deepseek-flash serves V4.1-Flash; enabled thinking defaults to High effort.
+thinking_enabled = true
+context_length = 1048576
 
 # SQL-only use does not call embeddings. Configure a real embedding endpoint
 # before using knowledge-base indexing; the chat provider may not offer one.

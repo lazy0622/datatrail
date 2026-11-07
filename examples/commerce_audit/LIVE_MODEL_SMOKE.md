@@ -27,3 +27,15 @@
 后续应逐条分析生成结果、解析与记忆轨迹，区分提示约束、终止协议、重复动作与证据读取问题。再选择有边界的改动，比较未改版本、充分治理提示版本及新增机制版本，并记录误拦截与退化。
 
 本地原始事件分别保存在忽略上传的 `output/datatrail/live-july-smoke.json`、`live-business-smoke.json`、`live-guard-smoke.json`。未把真实密钥、数据库或原始运行日志纳入仓库。
+
+## 改用 V4.1-Flash High 后的复测
+
+2026-11-07 根据用户偏好，当前默认配置改为 `deepseek-flash`，显式 `thinking_enabled=true`；High 为官方 API 在思考模式下的默认推理强度。核对了后端模型注册，以及实际请求中的模型名和 thinking 参数。原始事件保存在忽略上传的 `output/datatrail/live-flash-high-smoke.json`。
+
+相同的普通业务提问，本次执行 1 次 `sql_query` 和 1 次 `commerce_profile`，并在下一步返回最终答案；耗时 20.83 秒，金额 `867953.46`、订单数 `6159` 与参考值一致。诊断工具使用整个指定诊断订单范围，不能把其结果当作 2018 年 7 月的诊断统计。
+
+本次最终回答额外声称商品金额“未扣减折扣券”，这一说法没有由当前查询及数据定义证明，应视为待检查的无依据业务解释。数字正确不代表回答的每项业务解释均经过验证。
+
+这只是一项连通与行为观察。此前 Pro 未开启思考，而这次 Flash 使用 High；工具选择也不同，不能由这两个单次耗时声称受控性能提升、稳定修复重复执行问题或更高准确率。便宜指官方 token 单价；High 的实际请求费用仍取决于输入、缓存及推理输出用量。
+
+型号、默认推理配置与价格来源：[官方模型定价](https://api-docs.deepseek.com/quick_start/pricing/)、[官方思考模式说明](https://api-docs.deepseek.com/guides/thinking_mode/)。
