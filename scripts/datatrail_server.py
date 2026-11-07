@@ -13,6 +13,7 @@ def main():
     os.chdir(ROOT)
     load_dotenv(ROOT / ".env.local", override=False)
     os.environ.setdefault("DATATRAIL_GRAIN_GUARD", "1")
+    os.environ.setdefault("DATATRAIL_QUERY_REUSE", "1")
     if not os.environ.get("EMBEDDING_API_KEY"):
         os.environ.setdefault("DBGPT_SKIP_SCHEMA_EMBEDDING", "1")
     os.environ.setdefault(

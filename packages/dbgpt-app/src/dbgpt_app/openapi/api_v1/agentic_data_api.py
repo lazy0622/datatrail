@@ -3042,10 +3042,29 @@ async def _react_agent_stream_impl(
     dashboard_sql_query_limit = (
         (0 if dashboard_non_discovery_turn else 8) if dashboard_agent_mode else None
     )
+    if (
+        database_name == "olist_ecommerce_demo"
+        and os.environ.get("DATATRAIL_GRAIN_GUARD") == "1"
+        and not dashboard_agent_mode
+    ):
+        database_context += """
+## Olist 业务证据边界
+- 商品金额使用 price，运费为独立的 freight_value。不能仅凭 price 字段名
+  判断价格是否已扣优惠券、是否含税或是否完成退款；当前数据未提供这些口径的证明。
+  被问到这些问题时，应明确无法从当前数据确认，并说明需要补充的数据。
+- SQL 结果只代表其状态、时间与 JOIN 范围。commerce_profile 的全量诊断范围
+  不能冒充当前月份的统计；引用诊断数字时必须同时说明其范围。
+- 将查询事实与业务假设分开；分组金额变化本身不能证明变化原因。
+"""
     sql_query_tool = make_sql_query(
         react_state,
         database_connector,
         max_calls=dashboard_sql_query_limit,
+        reuse_results=(
+            os.environ.get("DATATRAIL_QUERY_REUSE") == "1"
+            and database_name == "olist_ecommerce_demo"
+            and not dashboard_agent_mode
+        ),
     )
     chart_query_tool = make_chart_query(react_state, database_connector)
     commerce_tools = []

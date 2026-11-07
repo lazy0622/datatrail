@@ -15,6 +15,7 @@ from dbgpt.core.interface.report_capture import (
 )
 from dbgpt.datasource.rdbms.base import RDBMSConnector
 
+from .query_reuse import TurnQueryReuse, reusable_sql
 from .sql_read_only import ReadOnlySqlError, read_only_sql
 
 
@@ -40,8 +41,10 @@ def make_sql_query(
     max_output_chars: Optional[int] = 20_000,
     query_timeout_seconds: float = 30,
     max_calls: Optional[int] = None,
+    reuse_results: bool = False,
 ):
     call_count = 0
+    query_reuse = TurnQueryReuse() if reuse_results else None
     limit_description = (
         f" Dashboard planning allows at most {max_calls} discovery calls; "
         "after that, use the collected observations and call plan_dashboard."
@@ -55,15 +58,19 @@ def make_sql_query(
         else ""
     )
 
-    @tool(
-        description=(
-            "对用户选择的数据库执行 SQL 查询（仅支持 SELECT）。"
-            '参数: {"sql": "SELECT 语句"}。单次查询默认最多 30 秒，超时后先查看 '
-            "EXPLAIN QUERY PLAN 与关联索引，优化查询；不要原样反复提交超时 SQL。"
-            + limit_description
-        )
+    description = (
+        "对用户选择的数据库执行 SQL 查询（仅支持 SELECT）。"
+        '参数: {"sql": "SELECT 语句"}。单次查询默认最多 30 秒，超时后先查看 '
+        "EXPLAIN QUERY PLAN 与关联索引，优化查询；不要原样反复提交超时 SQL。"
+        + limit_description
     )
-    async def sql_query(sql: str) -> str:
+    if reuse_results:
+        description += (
+            " 静态 Olist 数据源中，本轮相同的确定性 SQL 会复用首次成功结果；"
+            "跨轮不复用，随机、时间及未知函数不复用。"
+        )
+
+    async def execute_sql(sql: str) -> str:
         """Execute a read-only SQL query against the selected database."""
 
         nonlocal call_count
@@ -277,6 +284,14 @@ def make_sql_query(
                 },
                 ensure_ascii=False,
             )
+
+    @tool(description=description)
+    async def sql_query(sql: str) -> str:
+        if query_reuse is not None and reusable_sql(
+            sql, getattr(database_connector, "dialect", "")
+        ):
+            return await query_reuse.execute(sql, execute_sql)
+        return await execute_sql(sql)
 
     @wraps(sql_query)
     def invoke_sql_query(*args, **kwargs):
