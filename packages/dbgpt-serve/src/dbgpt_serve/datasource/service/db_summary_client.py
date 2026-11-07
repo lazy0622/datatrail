@@ -1,6 +1,7 @@
 """DBSummaryClient class."""
 
 import logging
+import os
 import threading
 import traceback
 from typing import Dict, Tuple
@@ -73,6 +74,9 @@ class DBSummaryClient:
         ``/refresh`` API, retries on failure) cannot race and delete each
         other's in-flight chroma collections.
         """
+        if os.environ.get("DBGPT_SKIP_SCHEMA_EMBEDDING") == "1":
+            logger.info("Schema embedding skipped by deployment configuration.")
+            return
         lock = _get_db_index_lock(dbname)
         if not lock.acquire(blocking=False):
             logger.info(
