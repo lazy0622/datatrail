@@ -58,6 +58,7 @@ def mount_routers(app: FastAPI):
     from dbgpt_app.knowledge.api import router as knowledge_router
     from dbgpt_app.openapi.api_v1.agentic_data_api import router as agentic_data_api
     from dbgpt_app.openapi.api_v1.api_v1 import router as api_v1
+    from dbgpt_app.openapi.api_v1.commerce_api import router as commerce_api
     from dbgpt_app.openapi.api_v1.dashboard.api import router as dashboard_router
     from dbgpt_app.openapi.api_v1.editor.api_editor_v1 import (
         router as api_editor_route_v1,
@@ -72,6 +73,7 @@ def mount_routers(app: FastAPI):
     from dbgpt_serve.agent.app.endpoints import router as app_v2
 
     app.include_router(api_v1, prefix="/api", tags=["Chat"])
+    app.include_router(commerce_api, prefix="/api", tags=["DataTrail"])
     app.include_router(api_v2, prefix="/api", tags=["ChatV2"])
     app.include_router(api_editor_route_v1, prefix="/api", tags=["Editor"])
     app.include_router(api_fb_v1, prefix="/api", tags=["FeedBack"])

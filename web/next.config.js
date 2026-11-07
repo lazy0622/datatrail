@@ -13,6 +13,7 @@ const nextConfig = {
   bundlePagesRouterDependencies: true,
   experimental: {
     esmExternals: "loose",
+    webpackMemoryOptimizations: true,
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -53,6 +54,9 @@ const nextConfig = {
   images: { unoptimized: true },
   skipTrailingSlashRedirect: true,
   webpack: (config, { dev, isServer }) => {
+    // The analytics page imports large chart libraries. Inline development
+    // source maps can exhaust memory on a local Windows deployment.
+    if (dev) config.devtool = false;
     if (dev && !isServer) {
       // Fast Refresh can reach CommonJS helpers and regenerator nested under transpiled packages.
       // Its injected import.meta needs an auto parser despite Babel's package type.

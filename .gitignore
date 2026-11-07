@@ -223,3 +223,9 @@ docs/superpowers/
 /examples/dashboard/generated/
 /pilot/meta_data/dashboard-share.key
 /examples/dashboard/olist/data/
+
+# DataTrail local credentials and generated audit reports
+/.env.local
+/web/.env.local
+/examples/commerce_audit/*-result.json
+/pilot/meta_data/datatrail.key

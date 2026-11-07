@@ -1,3 +1,13 @@
+# DataTrail · Commerce Analytics Agent
+
+Personal project based on DB-GPT, pinned to upstream commit `9d50d0a55071a040a8cb7684b3b6acfa13cc7c47`.
+
+**[DataTrail overview, local deployment, changes and validation →](DATATRAIL.md)**
+
+New work includes a commerce workspace, read-only join profiling, and a switchable SQL grain review gate. Agent orchestration, reports and dashboards reuse upstream DB-GPT. Original upstream documentation follows; MIT license and attribution are preserved.
+
+---
+
 # <img src="./assets/LOGO_SMALL.png" alt="Logo" style="vertical-align: middle; height: 24px;" /> DB-GPT: Open-Source Agentic AI Data Assistant
 
 <p align="left">

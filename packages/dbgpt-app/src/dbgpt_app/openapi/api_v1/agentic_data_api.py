@@ -3048,6 +3048,11 @@ async def _react_agent_stream_impl(
         max_calls=dashboard_sql_query_limit,
     )
     chart_query_tool = make_chart_query(react_state, database_connector)
+    commerce_tools = []
+    if os.environ.get("DATATRAIL_GRAIN_GUARD") == "1":
+        from .tools.commerce_profile import make_commerce_profile
+
+        commerce_tools = [make_commerce_profile(database_connector)]
     code_interpreter_tool = make_code_interpreter(react_state)
     # Report rendering/provenance is a small capability bundle.  The ReAct loop
     # only composes it; deployments can replace its policy/tool factory without
@@ -3724,6 +3729,7 @@ Example flow for 3 tasks:
                     read_file_tool,
                     *report_tools,
                     sql_query_tool,
+                    *commerce_tools,
                     chart_query_tool,
                     todowrite_tool,
                     question_tool,
@@ -3945,6 +3951,7 @@ Parameters: {{"tasks": [{{"goal": "...", "context": "...", "title": "..."}}]}}
                     execute_analysis_tool,
                     *report_tools,
                     sql_query_tool,
+                    *commerce_tools,
                     chart_query_tool,
                     read_file_tool,
                     todowrite_tool,

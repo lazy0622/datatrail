@@ -153,6 +153,14 @@ function SideBar() {
   const functions = useMemo(() => {
     const items: RouteItem[] = [
       {
+        key: 'commerce',
+        name: 'DataTrail',
+        isActive: pathname === '/commerce',
+        iconSrc: '',
+        IconComponent: props => <LineChartOutlined className='text-blue-500' {...props} />,
+        path: '/commerce',
+      },
+      {
         key: 'explore',
         name: t('explore'),
         isActive: pathname === '/',

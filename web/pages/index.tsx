@@ -1141,6 +1141,18 @@ const Playground: NextPage = () => {
   });
 
   // Fetch Knowledge Bases
+  const commerceEntryRef = useRef<string | null>(null);
+  useEffect(() => {
+    const question = router.query.question;
+    if (!router.isReady || router.query.datatrail !== '1' || router.query.id || typeof question !== 'string') return;
+    const source = dataSources?.find(ds => ds.db_name === 'olist_ecommerce_demo');
+    if (!source || commerceEntryRef.current === question) return;
+    commerceEntryRef.current = question;
+    resetTaskSession();
+    setSelectedDb(source);
+    setQuery(question);
+  }, [router.isReady, router.query, dataSources, resetTaskSession]);
+
   const { data: knowledgeSpaces, loading: _loadingKnowledge } = useRequest(async () => {
     try {
       const response = await sendSpacePostRequest('/api/v1/knowledge/space/list', {});

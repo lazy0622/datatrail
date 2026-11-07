@@ -1,0 +1,36 @@
+[system]
+language = "zh"
+api_keys = []
+encrypt_key = "${env:DATATRAIL_ENCRYPT_KEY}"
+
+[service.web]
+host = "127.0.0.1"
+port = 5670
+cors_allowed_origins = "http://127.0.0.1:3000,http://localhost:3000"
+
+[service.web.database]
+type = "sqlite"
+path = "pilot/meta_data/datatrail.db"
+
+[service.web.agent_context]
+max_context_tokens = 65536
+reserved_tokens = 4096
+max_new_tokens = 8192
+
+[rag.storage.vector]
+type = "chroma"
+persist_path = "pilot/data/datatrail"
+
+[[models.llms]]
+name = "${env:LLM_MODEL_NAME:-deepseek-chat}"
+provider = "${env:LLM_MODEL_PROVIDER:-proxy/deepseek}"
+api_base = "${env:OPENAI_API_BASE:-https://api.deepseek.com/v1}"
+api_key = "${env:OPENAI_API_KEY}"
+
+# SQL-only use does not call embeddings. Configure a real embedding endpoint
+# before using knowledge-base indexing; the chat provider may not offer one.
+[[models.embeddings]]
+name = "${env:EMBEDDING_MODEL_NAME:-text-embedding-3-small}"
+provider = "proxy/openai"
+api_url = "${env:EMBEDDING_MODEL_API_URL:-https://api.openai.com/v1/embeddings}"
+api_key = "${env:EMBEDDING_API_KEY:-not-configured}"
