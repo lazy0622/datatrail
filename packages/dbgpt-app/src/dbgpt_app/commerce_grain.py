@@ -28,13 +28,17 @@ def grain_review(sql: str, dialect: str = "sqlite") -> Optional[dict]:
                 continue
             # Scope.columns excludes columns belonging to nested subqueries.
             for column in scope.columns:
+                if column.find_ancestor(exp.Select) is not scope.expression:
+                    continue
                 aggregate = column.find_ancestor(exp.Sum)
                 if aggregate is None:
                     continue
                 value = aggregate.this
                 if isinstance(value, exp.Distinct) and len(value.expressions) == 1:
                     value = value.expressions[0]
-                if value is not column:
+                # Include amount columns wrapped in arithmetic, COALESCE or
+                # CAST, but never borrow columns from a nested SELECT scope.
+                if not any(node is column for node in value.walk()):
                     continue
                 item_amount = column.table in items and column.name.lower() in {
                     "price",

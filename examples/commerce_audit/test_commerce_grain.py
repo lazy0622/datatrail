@@ -30,7 +30,45 @@ def test_outside_supported_risk_pattern_is_not_rejected(sql):
 
 
 def test_distinct_amount_is_not_a_safe_way_to_remove_join_duplicates():
-    assert grain_review(
-        "SELECT SUM(DISTINCT i.price) FROM order_items i "
+    assert (
+        grain_review(
+            "SELECT SUM(DISTINCT i.price) FROM order_items i "
+            "JOIN order_payments p ON p.order_id=i.order_id"
+        )["code"]
+        == "COMMERCE_GRAIN_REVIEW_REQUIRED"
+    )
+
+
+@pytest.mark.parametrize(
+    "expression",
+    [
+        "i.price+i.freight_value",
+        "i.price*1.0",
+        "COALESCE(p.payment_value,0)",
+        "CAST(i.price AS REAL)",
+        "ROUND(i.freight_value,2)",
+        "DISTINCT (i.price+i.freight_value)",
+    ],
+)
+def test_amount_inside_sum_expression_requires_review(expression):
+    result = grain_review(
+        f"SELECT SUM({expression}) FROM order_items i "
         "JOIN order_payments p ON p.order_id=i.order_id"
-    )["code"] == "COMMERCE_GRAIN_REVIEW_REQUIRED"
+    )
+    assert result["code"] == "COMMERCE_GRAIN_REVIEW_REQUIRED"
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "SELECT COUNT(DISTINCT i.order_id) FROM order_items i "
+        "JOIN order_payments p ON p.order_id=i.order_id",
+        "SELECT SUM(x.amount) FROM "
+        "(SELECT order_id,SUM(price+freight_value) amount FROM order_items "
+        "GROUP BY order_id) x JOIN order_payments p ON p.order_id=x.order_id",
+        "SELECT SUM((SELECT MAX(i.price) FROM other_table x)) "
+        "FROM order_items i JOIN order_payments p ON p.order_id=i.order_id",
+    ],
+)
+def test_expression_review_keeps_scope_boundaries(sql):
+    assert grain_review(sql) is None
