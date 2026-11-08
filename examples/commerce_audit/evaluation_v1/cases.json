@@ -1,0 +1,276 @@
+{
+  "version": 1,
+  "frozen_at": "2026-11-08T14:54:12.241640+00:00",
+  "baseline_commit": "1ac64e358f212bd80600f7afa0643bedf9ef8f41",
+  "database_sha256": "170f1317276cd5420a7f84e78357105b04087f67a326a1b047721638dba358ba",
+  "schema": "CREATE TABLE olist_category_translation (\n\tproduct_category_name VARCHAR(128) NOT NULL, \n\tproduct_category_name_english VARCHAR(128) NOT NULL, \n\tPRIMARY KEY (product_category_name)\n)\nCREATE TABLE olist_customers (\n\tcustomer_id VARCHAR(32) NOT NULL, \n\tcustomer_unique_id VARCHAR(32) NOT NULL, \n\tcustomer_zip_code_prefix INTEGER NOT NULL, \n\tcustomer_city VARCHAR(128) NOT NULL, \n\tcustomer_state VARCHAR(2) NOT NULL, \n\tPRIMARY KEY (customer_id)\n)\nCREATE TABLE olist_order_items (\n\torder_id VARCHAR(32) NOT NULL, \n\torder_item_id INTEGER NOT NULL, \n\tproduct_id VARCHAR(32) NOT NULL, \n\tseller_id VARCHAR(32) NOT NULL, \n\tshipping_limit_date DATETIME NOT NULL, \n\tprice FLOAT NOT NULL, \n\tfreight_value FLOAT NOT NULL, \n\tPRIMARY KEY (order_id, order_item_id), \n\tFOREIGN KEY(order_id) REFERENCES olist_orders (order_id), \n\tFOREIGN KEY(product_id) REFERENCES olist_products (product_id), \n\tFOREIGN KEY(seller_id) REFERENCES olist_sellers (seller_id)\n)\nCREATE TABLE olist_order_payments (\n\torder_id VARCHAR(32) NOT NULL, \n\tpayment_sequential INTEGER NOT NULL, \n\tpayment_type VARCHAR(32) NOT NULL, \n\tpayment_installments INTEGER NOT NULL, \n\tpayment_value FLOAT NOT NULL, \n\tPRIMARY KEY (order_id, payment_sequential), \n\tFOREIGN KEY(order_id) REFERENCES olist_orders (order_id)\n)\nCREATE TABLE olist_order_reviews (\n\treview_id VARCHAR(32) NOT NULL, \n\torder_id VARCHAR(32) NOT NULL, \n\treview_score INTEGER NOT NULL, \n\treview_comment_title TEXT, \n\treview_comment_message TEXT, \n\treview_creation_date DATETIME NOT NULL, \n\treview_answer_timestamp DATETIME NOT NULL, \n\tPRIMARY KEY (review_id, order_id), \n\tFOREIGN KEY(order_id) REFERENCES olist_orders (order_id)\n)\nCREATE TABLE olist_orders (\n\torder_id VARCHAR(32) NOT NULL, \n\tcustomer_id VARCHAR(32) NOT NULL, \n\torder_status VARCHAR(32) NOT NULL, \n\torder_purchase_timestamp DATETIME NOT NULL, \n\torder_approved_at DATETIME, \n\torder_delivered_carrier_date DATETIME, \n\torder_delivered_customer_date DATETIME, \n\torder_estimated_delivery_date DATETIME NOT NULL, \n\tPRIMARY KEY (order_id), \n\tFOREIGN KEY(customer_id) REFERENCES olist_customers (customer_id)\n)\nCREATE TABLE olist_products (\n\tproduct_id VARCHAR(32) NOT NULL, \n\tproduct_category_name VARCHAR(128), \n\tproduct_name_length INTEGER, \n\tproduct_description_length INTEGER, \n\tproduct_photos_qty INTEGER, \n\tproduct_weight_g FLOAT, \n\tproduct_length_cm FLOAT, \n\tproduct_height_cm FLOAT, \n\tproduct_width_cm FLOAT, \n\tPRIMARY KEY (product_id)\n)\nCREATE TABLE olist_sellers (\n\tseller_id VARCHAR(32) NOT NULL, \n\tseller_zip_code_prefix INTEGER NOT NULL, \n\tseller_city VARCHAR(128) NOT NULL, \n\tseller_state VARCHAR(2) NOT NULL, \n\tPRIMARY KEY (seller_id)\n)",
+  "cases": [
+    {
+      "id": "D01",
+      "split": "development",
+      "question": "按下单时间 [2018-07-01,2018-08-01)、已交付订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          867953.46,
+          6159
+        ]
+      ]
+    },
+    {
+      "id": "D02",
+      "split": "development",
+      "question": "按下单时间 [2018-07-01,2018-08-01)、已交付订单，只统计至少有一条支付记录的订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          867953.46,
+          6159
+        ]
+      ]
+    },
+    {
+      "id": "D03",
+      "split": "development",
+      "question": "按下单时间 [2018-07-01,2018-08-01) 的已交付订单，只统计至少包含一条商品明细的订单。统计支付总额和有支付记录的订单去重数，每行依次为[支付金额,订单数]，金额保留两位。",
+      "reference_sql": "SELECT ROUND(SUM(p.payment_value),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)",
+      "alternate_sql": "WITH p AS (SELECT order_id,SUM(payment_value) amount FROM olist_order_payments GROUP BY order_id) SELECT ROUND(SUM(p.amount),2),COUNT(*) FROM p JOIN olist_orders o ON o.order_id=p.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND o.order_id IN(SELECT order_id FROM olist_order_items)",
+      "expected_rows": [
+        [
+          1027903.86,
+          6159
+        ]
+      ]
+    },
+    {
+      "id": "D04",
+      "split": "development",
+      "question": "按下单时间 [2018-07-01,2018-08-01)、已交付订单，只统计至少有一条支付记录的订单，统计含运费成交额和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price+i.freight_value),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price+freight_value) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          1027807.28,
+          6159
+        ]
+      ]
+    },
+    {
+      "id": "D05",
+      "split": "development",
+      "question": "按下单时间 [2016-01-01,2019-01-01)、已交付订单，只统计至少有一条支付记录的订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2016-01-01' AND o.order_purchase_timestamp<'2019-01-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2016-01-01' AND o.order_purchase_timestamp<'2019-01-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          13221363.14,
+          96477
+        ]
+      ]
+    },
+    {
+      "id": "D06",
+      "split": "development",
+      "question": "按下单时间 [2019-01-01,2019-02-01)、已交付订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2019-01-01' AND o.order_purchase_timestamp<'2019-02-01'",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2019-01-01' AND o.order_purchase_timestamp<'2019-02-01'",
+      "expected_rows": [
+        [
+          null,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "D07",
+      "split": "development",
+      "question": "统计2018年7月下单、状态为canceled的订单数，只查订单表，不要求有商品或支付记录。每行只输出[订单数]。",
+      "reference_sql": "SELECT COUNT(*) FROM olist_orders WHERE order_status='canceled' AND order_purchase_timestamp>='2018-07-01' AND order_purchase_timestamp<'2018-08-01'",
+      "alternate_sql": "SELECT COALESCE(SUM(CASE WHEN order_status='canceled' AND substr(order_purchase_timestamp,1,7)='2018-07' THEN 1 ELSE 0 END),0) FROM olist_orders",
+      "expected_rows": [
+        [
+          41
+        ]
+      ]
+    },
+    {
+      "id": "D08",
+      "split": "development",
+      "question": "计算2018年7月已交付订单的优惠券减免总金额。若当前数据没有明确的优惠券减免字段，不得用支付金额差推断，请返回unsupported。",
+      "unsupported": true,
+      "expected_rows": []
+    },
+    {
+      "id": "H01",
+      "split": "reserved",
+      "question": "按下单时间 [2017-07-01,2017-08-01)、已交付订单，只统计至少有一条支付记录的订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2017-07-01' AND o.order_purchase_timestamp<'2017-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2017-07-01' AND o.order_purchase_timestamp<'2017-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          481604.52,
+          3872
+        ]
+      ]
+    },
+    {
+      "id": "H02",
+      "split": "reserved",
+      "question": "按下单时间 [2018-08-01,2018-09-01)、已交付订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-08-01' AND o.order_purchase_timestamp<'2018-09-01'",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-08-01' AND o.order_purchase_timestamp<'2018-09-01'",
+      "expected_rows": [
+        [
+          838576.64,
+          6351
+        ]
+      ]
+    },
+    {
+      "id": "H03",
+      "split": "reserved",
+      "question": "按下单时间 [2017-09-01,2017-10-01) 的已交付订单，只统计至少包含一条商品明细的订单。统计支付总额和有支付记录的订单去重数，每行依次为[支付金额,订单数]，金额保留两位。",
+      "reference_sql": "SELECT ROUND(SUM(p.payment_value),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2017-09-01' AND o.order_purchase_timestamp<'2017-10-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)",
+      "alternate_sql": "WITH p AS (SELECT order_id,SUM(payment_value) amount FROM olist_order_payments GROUP BY order_id) SELECT ROUND(SUM(p.amount),2),COUNT(*) FROM p JOIN olist_orders o ON o.order_id=p.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2017-09-01' AND o.order_purchase_timestamp<'2017-10-01' AND o.order_id IN(SELECT order_id FROM olist_order_items)",
+      "expected_rows": [
+        [
+          701169.99,
+          4150
+        ]
+      ]
+    },
+    {
+      "id": "H04",
+      "split": "reserved",
+      "question": "按下单时间 [2018-06-01,2018-07-01)、已交付订单，只统计至少有一条支付记录的订单，统计运费和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.freight_value),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-06-01' AND o.order_purchase_timestamp<'2018-07-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(freight_value) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-06-01' AND o.order_purchase_timestamp<'2018-07-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          155900.43,
+          6099
+        ]
+      ]
+    },
+    {
+      "id": "H05",
+      "split": "reserved",
+      "question": "2018年7月已交付、同时有商品和支付记录的订单去重数。可以原始关联这两张明细，但只数不同订单、不累计金额。每行输出[订单数]。",
+      "reference_sql": "SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON o.order_id=i.order_id JOIN olist_order_payments p ON o.order_id=p.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "alternate_sql": "SELECT COUNT(*) FROM olist_orders o WHERE order_status='delivered' AND substr(order_purchase_timestamp,1,7)='2018-07' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id) AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          6159
+        ]
+      ]
+    },
+    {
+      "id": "H06",
+      "split": "reserved",
+      "question": "统计2018年7月下单的已交付订单，按支付方式汇总支付金额，金额保留两位，按payment_type升序，每行[支付方式,支付金额]。",
+      "reference_sql": "SELECT p.payment_type,ROUND(SUM(p.payment_value),2) FROM olist_order_payments p JOIN olist_orders o ON o.order_id=p.order_id WHERE o.order_status='delivered' AND substr(o.order_purchase_timestamp,1,7)='2018-07' GROUP BY p.payment_type ORDER BY p.payment_type",
+      "alternate_sql": "WITH p AS(SELECT order_id,payment_type,SUM(payment_value) amount FROM olist_order_payments GROUP BY order_id,payment_type) SELECT p.payment_type,ROUND(SUM(p.amount),2) FROM p JOIN olist_orders o ON o.order_id=p.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' GROUP BY p.payment_type ORDER BY p.payment_type",
+      "expected_rows": [
+        [
+          "boleto",
+          193413.41
+        ],
+        [
+          "credit_card",
+          775887.27
+        ],
+        [
+          "debit_card",
+          38863.17
+        ],
+        [
+          "voucher",
+          19740.01
+        ]
+      ]
+    },
+    {
+      "id": "H07",
+      "split": "reserved",
+      "question": "2018年7月已交付订单，按客户收货州统计SP与RJ的商品金额（不含运费），保留两位，州升序。每行[州,金额]。",
+      "reference_sql": "SELECT c.customer_state,ROUND(SUM(i.price),2) FROM olist_orders o JOIN olist_customers c ON c.customer_id=o.customer_id JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND substr(o.order_purchase_timestamp,1,7)='2018-07' AND c.customer_state IN('SP','RJ') GROUP BY c.customer_state ORDER BY c.customer_state",
+      "alternate_sql": "SELECT c.customer_state,ROUND(SUM((SELECT SUM(i.price) FROM olist_order_items i WHERE i.order_id=o.order_id)),2) FROM olist_orders o JOIN olist_customers c ON c.customer_id=o.customer_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND c.customer_state IN('SP','RJ') GROUP BY c.customer_state ORDER BY c.customer_state",
+      "expected_rows": [
+        [
+          "RJ",
+          97033.4
+        ],
+        [
+          "SP",
+          321647.25
+        ]
+      ]
+    },
+    {
+      "id": "H08",
+      "split": "reserved",
+      "question": "2018年7月已交付且有商品明细的订单，计算商品金额客单价（不含运费），总商品金额除以订单去重数，保留两位。每行[客单价]。",
+      "reference_sql": "SELECT ROUND(SUM(i.price)/COUNT(DISTINCT o.order_id),2) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND substr(o.order_purchase_timestamp,1,7)='2018-07'",
+      "alternate_sql": "WITH i AS(SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(AVG(i.amount),2) FROM i JOIN olist_orders o ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          140.92
+        ]
+      ]
+    },
+    {
+      "id": "H09",
+      "split": "reserved",
+      "question": "按下单时间 [2018-07-31,2018-08-01)、已交付订单，只统计至少有一条支付记录的订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-31' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-31' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          44804.02,
+          313
+        ]
+      ]
+    },
+    {
+      "id": "H10",
+      "split": "reserved",
+      "question": "按下单时间 [2015-01-01,2015-02-01)、已交付订单，统计商品金额（不含运费）和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2015-01-01' AND o.order_purchase_timestamp<'2015-02-01'",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2015-01-01' AND o.order_purchase_timestamp<'2015-02-01'",
+      "expected_rows": [
+        [
+          null,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "H11",
+      "split": "reserved",
+      "question": "按下单时间 [2017-11-01,2017-12-01)、已交付订单，只统计至少有一条支付记录的订单，统计含运费成交额和有商品记录的订单去重数。结果每行依次为[金额,订单数]；金额保留两位，空集合金额保持NULL，订单数为0。",
+      "reference_sql": "SELECT ROUND(SUM(i.price+i.freight_value),2),COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2017-11-01' AND o.order_purchase_timestamp<'2017-12-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "alternate_sql": "WITH x AS (SELECT order_id,SUM(price+freight_value) amount FROM olist_order_items GROUP BY order_id) SELECT ROUND(SUM(x.amount),2),COUNT(*) FROM olist_orders o JOIN x ON x.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2017-11-01' AND o.order_purchase_timestamp<'2017-12-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          1153364.2,
+          7289
+        ]
+      ]
+    },
+    {
+      "id": "H12",
+      "split": "reserved",
+      "question": "2018年7月已交付、有商品和支付记录、支付合计大于0的订单，按每笔支付额占该订单支付总额的比例分摊商品金额，再汇总全部分摊额。这里明确允许按订单内支付比例分摊；每行[分摊总金额]，保留两位。",
+      "reference_sql": "WITH p AS(SELECT order_id,SUM(payment_value) total FROM olist_order_payments GROUP BY order_id) SELECT ROUND(SUM(i.price),2) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND substr(o.order_purchase_timestamp,1,7)='2018-07' AND p.total>0",
+      "alternate_sql": "WITH pt AS(SELECT order_id,SUM(payment_value) total FROM olist_order_payments GROUP BY order_id) SELECT ROUND(SUM(i.price*p.payment_value/pt.total),2) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id JOIN pt ON pt.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND pt.total>0",
+      "expected_rows": [
+        [
+          867953.46
+        ]
+      ]
+    }
+  ],
+  "limits": "Reserved cases sealed before gate changes; same author curates both splits. Not blinded, externally authored, or a permanent unseen set after this run."
+}
