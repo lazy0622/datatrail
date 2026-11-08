@@ -1,4 +1,5 @@
 import pytest
+from sqlalchemy import create_engine, text
 
 from examples.commerce_audit.evaluation_v1.run_comparison import parse_final, rows_match
 
@@ -22,3 +23,14 @@ def test_final_json_accepts_code_fence_but_not_prose():
     assert parse_final('```json\n{"status":"ok","rows":[[1]]}\n```')["rows"] == [[1]]
     with pytest.raises(ValueError):
         parse_final("amount is 1")
+
+
+def test_grader_accepts_database_rows_without_stringifying_them():
+    engine = create_engine("sqlite://")
+    try:
+        with engine.connect() as connection:
+            rows = connection.execute(text("SELECT 1.25, NULL")).fetchall()
+        assert rows_match(rows, [[1.25, None]])
+        assert [list(row) for row in rows] == [[1.25, None]]
+    finally:
+        engine.dispose()

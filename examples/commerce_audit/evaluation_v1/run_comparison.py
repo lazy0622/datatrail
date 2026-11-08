@@ -8,6 +8,7 @@ import math
 import os
 import sqlite3
 import time
+from collections.abc import Sequence
 from pathlib import Path
 
 import httpx
@@ -27,7 +28,11 @@ def rows_match(actual, expected):
     if not isinstance(actual, (list, tuple)) or len(actual) != len(expected):
         return False
     for left, right in zip(actual, expected):
-        if not isinstance(left, (list, tuple)) or len(left) != len(right):
+        if (
+            not isinstance(left, Sequence)
+            or isinstance(left, (str, bytes))
+            or len(left) != len(right)
+        ):
             return False
         for value, target in zip(left, right):
             if isinstance(value, (int, float)) and isinstance(target, (int, float)):
@@ -55,7 +60,7 @@ async def one_case(case, arm, frozen, client):
         executed.append(
             {
                 "sql": sql,
-                "rows": (rows or [])[:50],
+                "rows": [list(row) for row in (rows or [])[:50]],
                 "columns": columns,
                 "row_count": len(rows or []),
             }

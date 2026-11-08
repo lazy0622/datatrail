@@ -1,0 +1,3668 @@
+{
+  "tier": "controlled_sql_tool_comparison_not_full_ui_agent",
+  "metric_name": "predefined_business_contract_conformance",
+  "arm_definitions": {
+    "A": "basic schema+SQL tool, no DataTrail gate or reuse",
+    "B": "A+full upstream governance document",
+    "C": "B+expanded grain gate; query reuse still disabled"
+  },
+  "split": {
+    "development": 8,
+    "reserved": 12
+  },
+  "notes": [
+    "H05/H07/H12 omit an explicit purchase-vs-delivery time basis. A selected delivery time; the oracle and governance document select purchase time. Those score differences measure the predefined default contract, not universally wrong facts. Original frozen questions are retained without post-hoc edits.",
+    "Collector-only correction: SQLAlchemy rows serialized as tuple strings in the initial raw logs. SQL-result grading was recomputed from those stored tuples without model/query reruns; original logs and settings hashes retained. Final-answer grading was unaffected. The current runner normalizes rows.",
+    "Fixed order A then B then C, one sample per case/arm; cache and time-of-run effects are not controlled.",
+    "The evaluator author curated both splits; reserved questions were frozen before code changes, not externally blinded.",
+    "Identical results of a rejected query on this database are evidence for review, not proof of SQL semantic equivalence.",
+    "No post-outcome prompt tuning or replacement of failed cases. No full UI multi-tool-agent or production speed claim.",
+    "Monetary cost not returned; provider-reported token usage retained without claiming actual billed currency cost."
+  ],
+  "settings": {
+    "A": {
+      "arm": "A",
+      "tier": "shared_controlled_sql_tool_harness_not_full_ui_agent",
+      "model": "deepseek-flash",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "rounds": 6,
+      "sql_calls": 8,
+      "case_timeout_seconds": 90,
+      "concurrency": 2,
+      "cases_sha256": "64f8b07493ae8d1affb14e1b44cf4c8d87c91075f8a231c247b404041874d102",
+      "database_sha256": "170f1317276cd5420a7f84e78357105b04087f67a326a1b047721638dba358ba",
+      "gate_sha256": "e6884bb03a773f2d1e86d58882fd1231c389b935670b568e1bf312e19504f575",
+      "governance_sha256": "3bbc30baf8addc795153ef476d9baf28549f4b37396e1d7671872d9ee013d11c",
+      "runner_sha256": "f17ca8991c470dd70e4262440cd403da2fe8bbe9a0ae7f245dc3369a0c23cd7e"
+    },
+    "B": {
+      "arm": "B",
+      "tier": "shared_controlled_sql_tool_harness_not_full_ui_agent",
+      "model": "deepseek-flash",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "rounds": 6,
+      "sql_calls": 8,
+      "case_timeout_seconds": 90,
+      "concurrency": 2,
+      "cases_sha256": "64f8b07493ae8d1affb14e1b44cf4c8d87c91075f8a231c247b404041874d102",
+      "database_sha256": "170f1317276cd5420a7f84e78357105b04087f67a326a1b047721638dba358ba",
+      "gate_sha256": "e6884bb03a773f2d1e86d58882fd1231c389b935670b568e1bf312e19504f575",
+      "governance_sha256": "3bbc30baf8addc795153ef476d9baf28549f4b37396e1d7671872d9ee013d11c",
+      "runner_sha256": "f17ca8991c470dd70e4262440cd403da2fe8bbe9a0ae7f245dc3369a0c23cd7e"
+    },
+    "C": {
+      "arm": "C",
+      "tier": "shared_controlled_sql_tool_harness_not_full_ui_agent",
+      "model": "deepseek-flash",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "rounds": 6,
+      "sql_calls": 8,
+      "case_timeout_seconds": 90,
+      "concurrency": 2,
+      "cases_sha256": "64f8b07493ae8d1affb14e1b44cf4c8d87c91075f8a231c247b404041874d102",
+      "database_sha256": "170f1317276cd5420a7f84e78357105b04087f67a326a1b047721638dba358ba",
+      "gate_sha256": "e6884bb03a773f2d1e86d58882fd1231c389b935670b568e1bf312e19504f575",
+      "governance_sha256": "3bbc30baf8addc795153ef476d9baf28549f4b37396e1d7671872d9ee013d11c",
+      "runner_sha256": "f17ca8991c470dd70e4262440cd403da2fe8bbe9a0ae7f245dc3369a0c23cd7e"
+    }
+  },
+  "arms": {
+    "A": {
+      "total": 20,
+      "completed": 20,
+      "final_correct": 17,
+      "development_correct": 8,
+      "reserved_correct": 9,
+      "last_sql_correct_of_19_numeric_cases": 16,
+      "mean_seconds": 4.23,
+      "median_seconds": 4.34,
+      "maximum_seconds": 7.2,
+      "model_calls": 40,
+      "sql_calls": 20,
+      "gate_rejections": 0,
+      "rejected_queries_matching_reference": 0,
+      "usage": {
+        "prompt_tokens": 57161,
+        "completion_tokens": 8798,
+        "total_tokens": 65959,
+        "prompt_cache_hit_tokens": 46720,
+        "prompt_cache_miss_tokens": 10441
+      }
+    },
+    "B": {
+      "total": 20,
+      "completed": 20,
+      "final_correct": 20,
+      "development_correct": 8,
+      "reserved_correct": 12,
+      "last_sql_correct_of_19_numeric_cases": 19,
+      "mean_seconds": 4.81,
+      "median_seconds": 3.51,
+      "maximum_seconds": 21.48,
+      "model_calls": 40,
+      "sql_calls": 20,
+      "gate_rejections": 0,
+      "rejected_queries_matching_reference": 0,
+      "usage": {
+        "prompt_tokens": 154506,
+        "completion_tokens": 7203,
+        "total_tokens": 161709,
+        "prompt_cache_hit_tokens": 146688,
+        "prompt_cache_miss_tokens": 7818
+      }
+    },
+    "C": {
+      "total": 20,
+      "completed": 20,
+      "final_correct": 20,
+      "development_correct": 8,
+      "reserved_correct": 12,
+      "last_sql_correct_of_19_numeric_cases": 19,
+      "mean_seconds": 3.82,
+      "median_seconds": 3.3,
+      "maximum_seconds": 7.81,
+      "model_calls": 40,
+      "sql_calls": 20,
+      "gate_rejections": 0,
+      "rejected_queries_matching_reference": 0,
+      "usage": {
+        "prompt_tokens": 154605,
+        "completion_tokens": 7191,
+        "total_tokens": 161796,
+        "prompt_cache_hit_tokens": 146560,
+        "prompt_cache_miss_tokens": 8045
+      }
+    }
+  },
+  "paired": {
+    "A_to_B": {
+      "wrong_to_correct": [
+        "H05",
+        "H07",
+        "H12"
+      ],
+      "correct_to_wrong": []
+    },
+    "B_to_C": {
+      "wrong_to_correct": [],
+      "correct_to_wrong": []
+    },
+    "A_to_C": {
+      "wrong_to_correct": [
+        "H05",
+        "H07",
+        "H12"
+      ],
+      "correct_to_wrong": []
+    }
+  },
+  "cases": {
+    "A": {
+      "D01": {
+        "case_id": "D01",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.44,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count FROM olist_order_items oi JOIN olist_orders o ON o.order_id = oi.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1202,
+            "completion_tokens": 224,
+            "total_tokens": 1426,
+            "prompt_tokens_details": {
+              "cached_tokens": 640
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 97
+            },
+            "prompt_cache_hit_tokens": 640,
+            "prompt_cache_miss_tokens": 562
+          },
+          {
+            "prompt_tokens": 1489,
+            "completion_tokens": 49,
+            "total_tokens": 1538,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 31
+            },
+            "prompt_cache_hit_tokens": 1280,
+            "prompt_cache_miss_tokens": 209
+          }
+        ]
+      },
+      "D02": {
+        "case_id": "D02",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 5.12,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1210,
+            "completion_tokens": 612,
+            "total_tokens": 1822,
+            "prompt_tokens_details": {
+              "cached_tokens": 640
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 453
+            },
+            "prompt_cache_hit_tokens": 640,
+            "prompt_cache_miss_tokens": 570
+          },
+          {
+            "prompt_tokens": 1885,
+            "completion_tokens": 61,
+            "total_tokens": 1946,
+            "prompt_tokens_details": {
+              "cached_tokens": 1664
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 43
+            },
+            "prompt_cache_hit_tokens": 1664,
+            "prompt_cache_miss_tokens": 221
+          }
+        ]
+      },
+      "D03": {
+        "case_id": "D03",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.05,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1027903.86,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS payment_total, COUNT(DISTINCT p.order_id) AS paid_orders\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n      SELECT 1 FROM olist_order_items i WHERE i.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1199,
+            "completion_tokens": 416,
+            "total_tokens": 1615,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 257
+            },
+            "prompt_cache_hit_tokens": 1024,
+            "prompt_cache_miss_tokens": 175
+          },
+          {
+            "prompt_tokens": 1681,
+            "completion_tokens": 40,
+            "total_tokens": 1721,
+            "prompt_tokens_details": {
+              "cached_tokens": 1536
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 21
+            },
+            "prompt_cache_hit_tokens": 1536,
+            "prompt_cache_miss_tokens": 145
+          }
+        ]
+      },
+      "D04": {
+        "case_id": "D04",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 5.11,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1027807.28,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_payments op WHERE op.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1208,
+            "completion_tokens": 557,
+            "total_tokens": 1765,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 391
+            },
+            "prompt_cache_hit_tokens": 1024,
+            "prompt_cache_miss_tokens": 184
+          },
+          {
+            "prompt_tokens": 1829,
+            "completion_tokens": 79,
+            "total_tokens": 1908,
+            "prompt_tokens_details": {
+              "cached_tokens": 1664
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 60
+            },
+            "prompt_cache_hit_tokens": 1664,
+            "prompt_cache_miss_tokens": 165
+          }
+        ]
+      },
+      "D05": {
+        "case_id": "D05",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 7.2,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              13221363.14,
+              96477
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(i.price), 2), COUNT(DISTINCT i.order_id)\nFROM olist_orders o\nJOIN olist_order_items i ON i.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2016-01-01'\n  AND o.order_purchase_timestamp < '2019-01-01'\n  AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id)",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1210,
+            "completion_tokens": 234,
+            "total_tokens": 1444,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 90
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 314
+          },
+          {
+            "prompt_tokens": 1523,
+            "completion_tokens": 19,
+            "total_tokens": 1542,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 1280,
+            "prompt_cache_miss_tokens": 243
+          }
+        ]
+      },
+      "D06": {
+        "case_id": "D06",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 1.56,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              null,
+              0
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS total_amount, COUNT(DISTINCT oi.order_id) AS order_cnt\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2019-01-01'\n  AND o.order_purchase_timestamp < '2019-02-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1202,
+            "completion_tokens": 138,
+            "total_tokens": 1340,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 4
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 306
+          },
+          {
+            "prompt_tokens": 1399,
+            "completion_tokens": 24,
+            "total_tokens": 1423,
+            "prompt_tokens_details": {
+              "cached_tokens": 1152
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 10
+            },
+            "prompt_cache_hit_tokens": 1152,
+            "prompt_cache_miss_tokens": 247
+          }
+        ]
+      },
+      "D07": {
+        "case_id": "D07",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 1.39,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              41
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT COUNT(*) FROM olist_orders WHERE order_status = 'canceled' AND order_purchase_timestamp >= '2018-07-01' AND order_purchase_timestamp < '2018-08-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1176,
+            "completion_tokens": 83,
+            "total_tokens": 1259,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 280
+          },
+          {
+            "prompt_tokens": 1311,
+            "completion_tokens": 12,
+            "total_tokens": 1323,
+            "prompt_tokens_details": {
+              "cached_tokens": 1152
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 1152,
+            "prompt_cache_miss_tokens": 159
+          }
+        ]
+      },
+      "D08": {
+        "case_id": "D08",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": null,
+        "failure": null,
+        "elapsed_seconds": 1.39,
+        "model_calls": 1,
+        "recorded_last_sql_correct_before_row_normalization": null,
+        "sql_calls": 0,
+        "executed_queries": 0,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "unsupported",
+          "rows": []
+        },
+        "sql_trace": [],
+        "usage": [
+          {
+            "prompt_tokens": 1177,
+            "completion_tokens": 86,
+            "total_tokens": 1263,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 75
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 281
+          }
+        ]
+      },
+      "H01": {
+        "case_id": "H01",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.81,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              481604.52,
+              3872
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT\n  ROUND(SUM(oi.price), 2) AS total_product_amount,\n  COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nLEFT JOIN olist_order_items oi\n  ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2017-07-01'\n  AND o.order_purchase_timestamp < '2017-08-01'\n  AND EXISTS (\n    SELECT 1\n    FROM olist_order_payments p\n    WHERE p.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1210,
+            "completion_tokens": 489,
+            "total_tokens": 1699,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 319
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 314
+          },
+          {
+            "prompt_tokens": 1764,
+            "completion_tokens": 47,
+            "total_tokens": 1811,
+            "prompt_tokens_details": {
+              "cached_tokens": 1536
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 29
+            },
+            "prompt_cache_hit_tokens": 1536,
+            "prompt_cache_miss_tokens": 228
+          }
+        ]
+      },
+      "H02": {
+        "case_id": "H02",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.62,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              838576.64,
+              6351
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH delivered_orders AS (\n  SELECT order_id\n  FROM olist_orders\n  WHERE order_status = 'delivered'\n    AND order_purchase_timestamp >= '2018-08-01'\n    AND order_purchase_timestamp < '2018-09-01'\n)\nSELECT ROUND(SUM(oi.price), 2) AS amount,\n       COUNT(DISTINCT oi.order_id) AS order_count\nFROM delivered_orders o\nLEFT JOIN olist_order_items oi ON oi.order_id = o.order_id;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1202,
+            "completion_tokens": 386,
+            "total_tokens": 1588,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 237
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 306
+          },
+          {
+            "prompt_tokens": 1651,
+            "completion_tokens": 46,
+            "total_tokens": 1697,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 28
+            },
+            "prompt_cache_hit_tokens": 1408,
+            "prompt_cache_miss_tokens": 243
+          }
+        ]
+      },
+      "H03": {
+        "case_id": "H03",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.06,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              701169.99,
+              4150
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH eligible AS (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2017-09-01'\n    AND o.order_purchase_timestamp < '2017-10-01'\n    AND EXISTS (\n      SELECT 1 FROM olist_order_items oi WHERE oi.order_id = o.order_id\n    )\n)\nSELECT ROUND(COALESCE(SUM(p.payment_value), 0), 2) AS payment_total,\n       COUNT(DISTINCT p.order_id) AS paid_order_count\nFROM eligible e\nJOIN olist_order_payments p ON p.order_id = e.order_id;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1199,
+            "completion_tokens": 526,
+            "total_tokens": 1725,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 341
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 303
+          },
+          {
+            "prompt_tokens": 1790,
+            "completion_tokens": 33,
+            "total_tokens": 1823,
+            "prompt_tokens_details": {
+              "cached_tokens": 1536
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 15
+            },
+            "prompt_cache_hit_tokens": 1536,
+            "prompt_cache_miss_tokens": 254
+          }
+        ]
+      },
+      "H04": {
+        "case_id": "H04",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 5.23,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              155900.43,
+              6099
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT\n  ROUND(SUM(oi.freight_value), 2) AS total_freight,\n  COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-06-01'\n  AND o.order_purchase_timestamp < '2018-07-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_payments p\n    WHERE p.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1205,
+            "completion_tokens": 584,
+            "total_tokens": 1789,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 414
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 309
+          },
+          {
+            "prompt_tokens": 1855,
+            "completion_tokens": 44,
+            "total_tokens": 1899,
+            "prompt_tokens_details": {
+              "cached_tokens": 1664
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 26
+            },
+            "prompt_cache_hit_tokens": 1664,
+            "prompt_cache_miss_tokens": 191
+          }
+        ]
+      },
+      "H05": {
+        "case_id": "H05",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": false,
+        "last_sql_correct": false,
+        "failure": null,
+        "elapsed_seconds": 3.02,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              5839
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT COUNT(DISTINCT o.order_id)\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_delivered_customer_date >= '2018-07-01'\n  AND o.order_delivered_customer_date < '2018-08-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1182,
+            "completion_tokens": 273,
+            "total_tokens": 1455,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 138
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 286
+          },
+          {
+            "prompt_tokens": 1514,
+            "completion_tokens": 18,
+            "total_tokens": 1532,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 5
+            },
+            "prompt_cache_hit_tokens": 1280,
+            "prompt_cache_miss_tokens": 234
+          }
+        ]
+      },
+      "H06": {
+        "case_id": "H06",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.14,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              "boleto",
+              193413.41
+            ],
+            [
+              "credit_card",
+              775887.27
+            ],
+            [
+              "debit_card",
+              38863.17
+            ],
+            [
+              "voucher",
+              19740.01
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT p.payment_type, ROUND(SUM(p.payment_value),2) AS total FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01' GROUP BY p.payment_type ORDER BY p.payment_type ASC",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1177,
+            "completion_tokens": 150,
+            "total_tokens": 1327,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 20
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 281
+          },
+          {
+            "prompt_tokens": 1425,
+            "completion_tokens": 46,
+            "total_tokens": 1471,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 1280,
+            "prompt_cache_miss_tokens": 145
+          }
+        ]
+      },
+      "H07": {
+        "case_id": "H07",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": false,
+        "last_sql_correct": false,
+        "failure": null,
+        "elapsed_seconds": 6.8,
+        "model_calls": 3,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 2,
+        "executed_queries": 2,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              "RJ",
+              "89579.46"
+            ],
+            [
+              "SP",
+              "291088.75"
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT c.customer_state, ROUND(SUM(oi.price), 2) AS amount\nFROM olist_orders o\nJOIN olist_customers c ON c.customer_id = o.customer_id\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND c.customer_state IN ('SP','RJ')\nGROUP BY c.customer_state\nORDER BY c.customer_state ASC;",
+            "error_code": null
+          },
+          {
+            "sql": "SELECT c.customer_state, printf('%.2f', SUM(oi.price)) AS amount\nFROM olist_orders o\nJOIN olist_customers c ON c.customer_id = o.customer_id\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_delivered_customer_date >= '2018-07-01'\n  AND o.order_delivered_customer_date < '2018-08-01'\n  AND c.customer_state IN ('SP','RJ')\nGROUP BY c.customer_state\nORDER BY c.customer_state ASC;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1176,
+            "completion_tokens": 220,
+            "total_tokens": 1396,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 50
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 280
+          },
+          {
+            "prompt_tokens": 1468,
+            "completion_tokens": 510,
+            "total_tokens": 1978,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 336
+            },
+            "prompt_cache_hit_tokens": 1280,
+            "prompt_cache_miss_tokens": 188
+          },
+          {
+            "prompt_tokens": 2050,
+            "completion_tokens": 82,
+            "total_tokens": 2132,
+            "prompt_tokens_details": {
+              "cached_tokens": 1792
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 56
+            },
+            "prompt_cache_hit_tokens": 1792,
+            "prompt_cache_miss_tokens": 258
+          }
+        ]
+      },
+      "H08": {
+        "case_id": "H08",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.62,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              140.92
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price) * 1.0 / COUNT(DISTINCT o.order_id), 2) FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1179,
+            "completion_tokens": 231,
+            "total_tokens": 1410,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 105
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 283
+          },
+          {
+            "prompt_tokens": 1487,
+            "completion_tokens": 35,
+            "total_tokens": 1522,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 21
+            },
+            "prompt_cache_hit_tokens": 1280,
+            "prompt_cache_miss_tokens": 207
+          }
+        ]
+      },
+      "H09": {
+        "case_id": "H09",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.98,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              44804.02,
+              313
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-31 00:00:00'\n  AND o.order_purchase_timestamp < '2018-08-01 00:00:00'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1210,
+            "completion_tokens": 452,
+            "total_tokens": 1662,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 281
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 314
+          },
+          {
+            "prompt_tokens": 1724,
+            "completion_tokens": 103,
+            "total_tokens": 1827,
+            "prompt_tokens_details": {
+              "cached_tokens": 1536
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 86
+            },
+            "prompt_cache_hit_tokens": 1536,
+            "prompt_cache_miss_tokens": 188
+          }
+        ]
+      },
+      "H10": {
+        "case_id": "H10",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.77,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              null,
+              0
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nLEFT JOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2015-01-01'\n  AND o.order_purchase_timestamp < '2015-02-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1202,
+            "completion_tokens": 315,
+            "total_tokens": 1517,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 182
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 306
+          },
+          {
+            "prompt_tokens": 1575,
+            "completion_tokens": 33,
+            "total_tokens": 1608,
+            "prompt_tokens_details": {
+              "cached_tokens": 1408
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 19
+            },
+            "prompt_cache_hit_tokens": 1408,
+            "prompt_cache_miss_tokens": 167
+          }
+        ]
+      },
+      "H11": {
+        "case_id": "H11",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 7.09,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1153364.2,
+              7289
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH qualifying_orders AS (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2017-11-01'\n    AND o.order_purchase_timestamp < '2017-12-01'\n    AND EXISTS (\n      SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n    )\n),\nitem_totals AS (\n  SELECT oi.order_id, SUM(oi.price + oi.freight_value) AS amount\n  FROM olist_order_items oi\n  JOIN qualifying_orders q ON q.order_id = oi.order_id\n  GROUP BY oi.order_id\n)\nSELECT ROUND(SUM(amount), 2) AS amount,\n       COUNT(order_id) AS order_count\nFROM item_totals;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1208,
+            "completion_tokens": 635,
+            "total_tokens": 1843,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 417
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 312
+          },
+          {
+            "prompt_tokens": 1907,
+            "completion_tokens": 250,
+            "total_tokens": 2157,
+            "prompt_tokens_details": {
+              "cached_tokens": 1664
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 231
+            },
+            "prompt_cache_hit_tokens": 1664,
+            "prompt_cache_miss_tokens": 243
+          }
+        ]
+      },
+      "H12": {
+        "case_id": "H12",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": false,
+        "last_sql_correct": false,
+        "failure": null,
+        "elapsed_seconds": 5.16,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              796428.85
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH delivered_orders AS (\n  SELECT order_id\n  FROM olist_orders\n  WHERE order_status = 'delivered'\n    AND order_delivered_customer_date >= '2018-07-01'\n    AND order_delivered_customer_date < '2018-08-01'\n),\nitem_totals AS (\n  SELECT oi.order_id, SUM(oi.price) AS item_total\n  FROM olist_order_items oi\n  JOIN delivered_orders d ON d.order_id = oi.order_id\n  GROUP BY oi.order_id\n),\npayment_totals AS (\n  SELECT p.order_id, SUM(p.payment_value) AS payment_total\n  FROM olist_order_payments p\n  JOIN delivered_orders d ON d.order_id = p.order_id\n  GROUP BY p.order_id\n  HAVING SUM(p.payment_value) > 0\n)\nSELECT ROUND(SUM(p.payment_value / pt.payment_total * it.item_total), 2) AS allocated_total\nFROM olist_order_payments p\nJOIN payment_totals pt ON pt.order_id = p.order_id\nJOIN item_totals it ON it.order_id = p.order_id;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 1202,
+            "completion_tokens": 641,
+            "total_tokens": 1843,
+            "prompt_tokens_details": {
+              "cached_tokens": 896
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 351
+            },
+            "prompt_cache_hit_tokens": 896,
+            "prompt_cache_miss_tokens": 306
+          },
+          {
+            "prompt_tokens": 1898,
+            "completion_tokens": 15,
+            "total_tokens": 1913,
+            "prompt_tokens_details": {
+              "cached_tokens": 1664
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 1664,
+            "prompt_cache_miss_tokens": 234
+          }
+        ]
+      }
+    },
+    "B": {
+      "D01": {
+        "case_id": "D01",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.48,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS gmv, COUNT(DISTINCT o.order_id) AS orders FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 126,
+            "total_tokens": 3789,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 3852,
+            "completion_tokens": 21,
+            "total_tokens": 3873,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 3
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 140
+          }
+        ]
+      },
+      "D02": {
+        "case_id": "D02",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.03,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT SUM(oi.price) AS amount, COUNT(DISTINCT o.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 296,
+            "total_tokens": 3967,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 144
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4030,
+            "completion_tokens": 63,
+            "total_tokens": 4093,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 45
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 190
+          }
+        ]
+      },
+      "D03": {
+        "case_id": "D03",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 21.48,
+        "model_calls": 3,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 2,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1027903.86,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH target AS (\n  SELECT DISTINCT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2018-07-01'\n    AND o.order_purchase_timestamp < '2018-08-01'\n    AND EXISTS (SELECT 1 FROM olist_order_items oi WHERE oi.order_id = o.order_id)\n),\npay AS (\n  SELECT p.order_id, SUM(p.payment_value) AS payment_amount\n  FROM olist_order_payments p\n  GROUP BY p.order_id\n)\nSELECT ROUND(SUM(pay.payment_amount), 2) AS payment_total,\n       COUNT(*) AS paid_orders\nFROM pay\nJOIN target ON target.order_id = pay.order_id;",
+            "error_code": "SQL_QUERY_TIMEOUT"
+          },
+          {
+            "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS payment_total,\n       COUNT(DISTINCT p.order_id) AS paid_orders\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (SELECT 1 FROM olist_order_items oi WHERE oi.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3660,
+            "completion_tokens": 467,
+            "total_tokens": 4127,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 265
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 204
+          },
+          {
+            "prompt_tokens": 4215,
+            "completion_tokens": 355,
+            "total_tokens": 4570,
+            "prompt_tokens_details": {
+              "cached_tokens": 3968
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 196
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 247
+          },
+          {
+            "prompt_tokens": 4636,
+            "completion_tokens": 19,
+            "total_tokens": 4655,
+            "prompt_tokens_details": {
+              "cached_tokens": 4480
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 4480,
+            "prompt_cache_miss_tokens": 156
+          }
+        ]
+      },
+      "D04": {
+        "case_id": "D04",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.41,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1027807.28,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS total_with_freight, COUNT(DISTINCT oi.order_id) AS item_orders FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01' AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3669,
+            "completion_tokens": 369,
+            "total_tokens": 4038,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 208
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 213
+          },
+          {
+            "prompt_tokens": 4107,
+            "completion_tokens": 52,
+            "total_tokens": 4159,
+            "prompt_tokens_details": {
+              "cached_tokens": 3968
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 33
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 139
+          }
+        ]
+      },
+      "D05": {
+        "case_id": "D05",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 11.14,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              13221363.14,
+              96477
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH eligible_orders AS (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2016-01-01'\n    AND o.order_purchase_timestamp < '2019-01-01'\n    AND EXISTS (\n      SELECT 1\n      FROM olist_order_payments p\n      WHERE p.order_id = o.order_id\n    )\n)\nSELECT\n  ROUND(SUM(oi.price), 2) AS product_amount,\n  COUNT(DISTINCT oi.order_id) AS item_orders\nFROM eligible_orders eo\nLEFT JOIN olist_order_items oi ON oi.order_id = eo.order_id;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 302,
+            "total_tokens": 3973,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 112
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4039,
+            "completion_tokens": 45,
+            "total_tokens": 4084,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 26
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 199
+          }
+        ]
+      },
+      "D06": {
+        "case_id": "D06",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.8,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              null,
+              0
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_amount, COUNT(DISTINCT oi.order_id) AS orders_with_items FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2019-01-01' AND o.order_purchase_timestamp < '2019-02-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 355,
+            "total_tokens": 4018,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 226
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 4078,
+            "completion_tokens": 30,
+            "total_tokens": 4108,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 16
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 238
+          }
+        ]
+      },
+      "D07": {
+        "case_id": "D07",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 1.8,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              41
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT COUNT(DISTINCT order_id) FROM olist_orders WHERE order_status = 'canceled' AND order_purchase_timestamp >= '2018-07-01' AND order_purchase_timestamp < '2018-08-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3637,
+            "completion_tokens": 88,
+            "total_tokens": 3725,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 181
+          },
+          {
+            "prompt_tokens": 3782,
+            "completion_tokens": 12,
+            "total_tokens": 3794,
+            "prompt_tokens_details": {
+              "cached_tokens": 3584
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3584,
+            "prompt_cache_miss_tokens": 198
+          }
+        ]
+      },
+      "D08": {
+        "case_id": "D08",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": null,
+        "failure": null,
+        "elapsed_seconds": 0.97,
+        "model_calls": 1,
+        "recorded_last_sql_correct_before_row_normalization": null,
+        "sql_calls": 0,
+        "executed_queries": 0,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "unsupported",
+          "rows": []
+        },
+        "sql_trace": [],
+        "usage": [
+          {
+            "prompt_tokens": 3638,
+            "completion_tokens": 59,
+            "total_tokens": 3697,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 48
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 182
+          }
+        ]
+      },
+      "H01": {
+        "case_id": "H01",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.47,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              481604.52,
+              3872
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_gmv, COUNT(DISTINCT o.order_id) AS item_orders FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2017-07-01' AND o.order_purchase_timestamp < '2017-08-01' AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 325,
+            "total_tokens": 3996,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 174
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4062,
+            "completion_tokens": 18,
+            "total_tokens": 4080,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 222
+          }
+        ]
+      },
+      "H02": {
+        "case_id": "H02",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.19,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              838576.64,
+              6351
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS gmv, COUNT(DISTINCT o.order_id) AS orders FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-08-01' AND o.order_purchase_timestamp < '2018-09-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 129,
+            "total_tokens": 3792,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 3
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 3855,
+            "completion_tokens": 18,
+            "total_tokens": 3873,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 143
+          }
+        ]
+      },
+      "H03": {
+        "case_id": "H03",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.05,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              701169.99,
+              4150
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(op.payment_value), 2) AS payment_total, COUNT(DISTINCT o.order_id) AS paid_orders\nFROM olist_orders o\nJOIN olist_order_payments op ON op.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2017-09-01'\n  AND o.order_purchase_timestamp < '2017-10-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_items oi WHERE oi.order_id = o.order_id\n  );",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3660,
+            "completion_tokens": 267,
+            "total_tokens": 3927,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 106
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 204
+          },
+          {
+            "prompt_tokens": 3992,
+            "completion_tokens": 18,
+            "total_tokens": 4010,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 152
+          }
+        ]
+      },
+      "H04": {
+        "case_id": "H04",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.25,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              155900.43,
+              6099
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.freight_value), 2) AS total_freight, COUNT(DISTINCT o.order_id) AS item_orders FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-06-01' AND o.order_purchase_timestamp < '2018-07-01' AND EXISTS (SELECT 1 FROM olist_order_payments op WHERE op.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3666,
+            "completion_tokens": 350,
+            "total_tokens": 4016,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 195
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 210
+          },
+          {
+            "prompt_tokens": 4083,
+            "completion_tokens": 43,
+            "total_tokens": 4126,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 25
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 243
+          }
+        ]
+      },
+      "H05": {
+        "case_id": "H05",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.14,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT COUNT(*) AS order_cnt FROM (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2018-07-01'\n    AND o.order_purchase_timestamp < '2018-08-01'\n    AND EXISTS (SELECT 1 FROM olist_order_items oi WHERE oi.order_id = o.order_id)\n    AND EXISTS (SELECT 1 FROM olist_order_payments op WHERE op.order_id = o.order_id)\n)",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3643,
+            "completion_tokens": 211,
+            "total_tokens": 3854,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 61
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 187
+          },
+          {
+            "prompt_tokens": 3907,
+            "completion_tokens": 13,
+            "total_tokens": 3920,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 195
+          }
+        ]
+      },
+      "H06": {
+        "case_id": "H06",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.55,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              "boleto",
+              193413.41
+            ],
+            [
+              "credit_card",
+              775887.27
+            ],
+            [
+              "debit_card",
+              38863.17
+            ],
+            [
+              "voucher",
+              19740.01
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT p.payment_type, ROUND(SUM(p.payment_value), 2) AS payment_amount\nFROM olist_order_payments p\nJOIN olist_orders o ON o.order_id = p.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\nGROUP BY p.payment_type\nORDER BY p.payment_type ASC;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3638,
+            "completion_tokens": 262,
+            "total_tokens": 3900,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 122
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 182
+          },
+          {
+            "prompt_tokens": 3999,
+            "completion_tokens": 104,
+            "total_tokens": 4103,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 58
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 159
+          }
+        ]
+      },
+      "H07": {
+        "case_id": "H07",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.33,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              "RJ",
+              97033.4
+            ],
+            [
+              "SP",
+              321647.25
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT c.customer_state, ROUND(SUM(oi.price), 2) AS gmv\nFROM olist_orders o\nJOIN olist_customers c ON c.customer_id = o.customer_id\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND c.customer_state IN ('SP','RJ')\nGROUP BY c.customer_state\nORDER BY c.customer_state ASC",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3637,
+            "completion_tokens": 174,
+            "total_tokens": 3811,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 3
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 181
+          },
+          {
+            "prompt_tokens": 3884,
+            "completion_tokens": 25,
+            "total_tokens": 3909,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 172
+          }
+        ]
+      },
+      "H08": {
+        "case_id": "H08",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.34,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              140.92
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price) / COUNT(DISTINCT o.order_id), 2) AS aov FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3640,
+            "completion_tokens": 181,
+            "total_tokens": 3821,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 57
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 184
+          },
+          {
+            "prompt_tokens": 3875,
+            "completion_tokens": 14,
+            "total_tokens": 3889,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 163
+          }
+        ]
+      },
+      "H09": {
+        "case_id": "H09",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.3,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              44804.02,
+              313
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-31'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 449,
+            "total_tokens": 4120,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 293
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4182,
+            "completion_tokens": 37,
+            "total_tokens": 4219,
+            "prompt_tokens_details": {
+              "cached_tokens": 3968
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 20
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 214
+          }
+        ]
+      },
+      "H10": {
+        "case_id": "H10",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.22,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              null,
+              0
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT\n  (SELECT SUM(oi.price)\n   FROM olist_orders o\n   JOIN olist_order_items oi ON oi.order_id = o.order_id\n   WHERE o.order_status = 'delivered'\n     AND o.order_purchase_timestamp >= '2015-01-01'\n     AND o.order_purchase_timestamp < '2015-02-01') AS amount,\n  (SELECT COUNT(DISTINCT o.order_id)\n   FROM olist_orders o\n   JOIN olist_order_items oi ON oi.order_id = o.order_id\n   WHERE o.order_status = 'delivered'\n     AND o.order_purchase_timestamp >= '2015-01-01'\n     AND o.order_purchase_timestamp < '2015-02-01') AS order_count;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 328,
+            "total_tokens": 3991,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 124
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 4049,
+            "completion_tokens": 38,
+            "total_tokens": 4087,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 24
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 209
+          }
+        ]
+      },
+      "H11": {
+        "case_id": "H11",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 5.52,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1153364.2,
+              7289
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count\nFROM olist_orders o\nLEFT JOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2017-11-01'\n  AND o.order_purchase_timestamp < '2017-12-01'\n  AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3669,
+            "completion_tokens": 420,
+            "total_tokens": 4089,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 257
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 213
+          },
+          {
+            "prompt_tokens": 4153,
+            "completion_tokens": 192,
+            "total_tokens": 4345,
+            "prompt_tokens_details": {
+              "cached_tokens": 3968
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 173
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 185
+          }
+        ]
+      },
+      "H12": {
+        "case_id": "H12",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 8.69,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount\n  FROM olist_order_items\n  GROUP BY order_id\n), pay_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_total\n  FROM olist_order_payments\n  GROUP BY order_id\n  HAVING SUM(payment_value) > 0\n)\nSELECT ROUND(SUM(i.item_amount * p.payment_value / pt.payment_total), 2) AS allocated_total\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id = o.order_id\nJOIN olist_order_payments p ON p.order_id = o.order_id\nJOIN pay_by_order pt ON pt.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 852,
+            "total_tokens": 4515,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 612
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 4570,
+            "completion_tokens": 76,
+            "total_tokens": 4646,
+            "prompt_tokens_details": {
+              "cached_tokens": 4352
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 61
+            },
+            "prompt_cache_hit_tokens": 4352,
+            "prompt_cache_miss_tokens": 218
+          }
+        ]
+      }
+    },
+    "C": {
+      "D01": {
+        "case_id": "D01",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.61,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_gmv, COUNT(DISTINCT o.order_id) AS delivered_orders_with_items\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 271,
+            "total_tokens": 3934,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 134
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 4002,
+            "completion_tokens": 18,
+            "total_tokens": 4020,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 162
+          }
+        ]
+      },
+      "D02": {
+        "case_id": "D02",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 7.05,
+        "model_calls": 3,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 2,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH scope AS (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2018-07-01'\n    AND o.order_purchase_timestamp < '2018-08-01'\n    AND EXISTS (\n      SELECT 1\n      FROM olist_order_payments p\n      WHERE p.order_id = o.order_id\n    )\n)\nSELECT ROUND(SUM(oi.price), 2) AS amount,\n       COUNT(DISTINCT oi.order_id) AS order_count\nFROM scope s\nLEFT JOIN olist_order_items oi ON oi.order_id = s.order_id;",
+            "error_code": "SQL_READ_ONLY_REQUIRED"
+          },
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS amount, COUNT(DISTINCT oi.order_id) AS order_count FROM olist_orders o LEFT JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01' AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id)",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 574,
+            "total_tokens": 4245,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 394
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4308,
+            "completion_tokens": 212,
+            "total_tokens": 4520,
+            "prompt_tokens_details": {
+              "cached_tokens": 4096
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 63
+            },
+            "prompt_cache_hit_tokens": 4096,
+            "prompt_cache_miss_tokens": 212
+          },
+          {
+            "prompt_tokens": 4583,
+            "completion_tokens": 52,
+            "total_tokens": 4635,
+            "prompt_tokens_details": {
+              "cached_tokens": 4352
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 34
+            },
+            "prompt_cache_hit_tokens": 4352,
+            "prompt_cache_miss_tokens": 231
+          }
+        ]
+      },
+      "D03": {
+        "case_id": "D03",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.91,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1027903.86,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS payment_total, COUNT(DISTINCT p.order_id) AS paid_orders\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (SELECT 1 FROM olist_order_items oi WHERE oi.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3660,
+            "completion_tokens": 286,
+            "total_tokens": 3946,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 128
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 204
+          },
+          {
+            "prompt_tokens": 4012,
+            "completion_tokens": 19,
+            "total_tokens": 4031,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 172
+          }
+        ]
+      },
+      "D04": {
+        "case_id": "D04",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.28,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1027807.28,
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS amount, COUNT(DISTINCT o.order_id) AS order_cnt FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01' AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id)",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3669,
+            "completion_tokens": 303,
+            "total_tokens": 3972,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 149
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 213
+          },
+          {
+            "prompt_tokens": 4036,
+            "completion_tokens": 19,
+            "total_tokens": 4055,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 196
+          }
+        ]
+      },
+      "D05": {
+        "case_id": "D05",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 7.81,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              13221363.14,
+              96477
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_gmv, COUNT(DISTINCT o.order_id) AS orders_cnt FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2016-01-01' AND o.order_purchase_timestamp < '2019-01-01' AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id)",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 368,
+            "total_tokens": 4039,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 219
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4105,
+            "completion_tokens": 19,
+            "total_tokens": 4124,
+            "prompt_tokens_details": {
+              "cached_tokens": 3968
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 137
+          }
+        ]
+      },
+      "D06": {
+        "case_id": "D06",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.45,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              null,
+              0
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_gmv, COUNT(DISTINCT o.order_id) AS orders_with_items FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2019-01-01' AND o.order_purchase_timestamp < '2019-02-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 211,
+            "total_tokens": 3874,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 82
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 3935,
+            "completion_tokens": 14,
+            "total_tokens": 3949,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 223
+          }
+        ]
+      },
+      "D07": {
+        "case_id": "D07",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.0,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              41
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o WHERE o.order_status = 'canceled' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3637,
+            "completion_tokens": 96,
+            "total_tokens": 3733,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 3
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 181
+          },
+          {
+            "prompt_tokens": 3791,
+            "completion_tokens": 12,
+            "total_tokens": 3803,
+            "prompt_tokens_details": {
+              "cached_tokens": 3584
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3584,
+            "prompt_cache_miss_tokens": 207
+          }
+        ]
+      },
+      "D08": {
+        "case_id": "D08",
+        "split": "development",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": null,
+        "failure": null,
+        "elapsed_seconds": 1.45,
+        "model_calls": 1,
+        "recorded_last_sql_correct_before_row_normalization": null,
+        "sql_calls": 0,
+        "executed_queries": 0,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "unsupported",
+          "rows": []
+        },
+        "sql_trace": [],
+        "usage": [
+          {
+            "prompt_tokens": 3638,
+            "completion_tokens": 147,
+            "total_tokens": 3785,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 136
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 182
+          }
+        ]
+      },
+      "H01": {
+        "case_id": "H01",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.58,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              481604.52,
+              3872
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_gmv, COUNT(DISTINCT o.order_id) AS item_orders FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2017-07-01' AND o.order_purchase_timestamp < '2017-08-01' AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id);",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 320,
+            "total_tokens": 3991,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 169
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4057,
+            "completion_tokens": 23,
+            "total_tokens": 4080,
+            "prompt_tokens_details": {
+              "cached_tokens": 3840
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 5
+            },
+            "prompt_cache_hit_tokens": 3840,
+            "prompt_cache_miss_tokens": 217
+          }
+        ]
+      },
+      "H02": {
+        "case_id": "H02",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.33,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              838576.64,
+              6351
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_gmv, COUNT(DISTINCT o.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-08-01'\n  AND o.order_purchase_timestamp < '2018-09-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 209,
+            "total_tokens": 3872,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 75
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 3937,
+            "completion_tokens": 36,
+            "total_tokens": 3973,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 18
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 225
+          }
+        ]
+      },
+      "H03": {
+        "case_id": "H03",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.5,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              701169.99,
+              4150
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH scope_orders AS (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2017-09-01'\n    AND o.order_purchase_timestamp < '2017-10-01'\n    AND EXISTS (\n      SELECT 1\n      FROM olist_order_items oi\n      WHERE oi.order_id = o.order_id\n    )\n),\npayment_by_order AS (\n  SELECT p.order_id, SUM(p.payment_value) AS payment_amount\n  FROM olist_order_payments p\n  JOIN scope_orders s ON s.order_id = p.order_id\n  GROUP BY p.order_id\n)\nSELECT\n  ROUND(COALESCE(SUM(payment_amount), 0), 2) AS payment_total,\n  COUNT(DISTINCT order_id) AS orders_with_payment\nFROM payment_by_order;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3660,
+            "completion_tokens": 567,
+            "total_tokens": 4227,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 338
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 204
+          },
+          {
+            "prompt_tokens": 4293,
+            "completion_tokens": 60,
+            "total_tokens": 4353,
+            "prompt_tokens_details": {
+              "cached_tokens": 4096
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 42
+            },
+            "prompt_cache_hit_tokens": 4096,
+            "prompt_cache_miss_tokens": 197
+          }
+        ]
+      },
+      "H04": {
+        "case_id": "H04",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 4.3,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              155900.43,
+              6099
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH paid_orders AS (SELECT DISTINCT order_id FROM olist_order_payments) SELECT ROUND(SUM(oi.freight_value), 2) AS total_freight, COUNT(DISTINCT oi.order_id) AS orders_with_items FROM olist_orders o JOIN paid_orders p ON p.order_id = o.order_id JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-06-01' AND o.order_purchase_timestamp < '2018-07-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3666,
+            "completion_tokens": 443,
+            "total_tokens": 4109,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 278
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 210
+          },
+          {
+            "prompt_tokens": 4176,
+            "completion_tokens": 18,
+            "total_tokens": 4194,
+            "prompt_tokens_details": {
+              "cached_tokens": 3968
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 208
+          }
+        ]
+      },
+      "H05": {
+        "case_id": "H05",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.11,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              6159
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT COUNT(DISTINCT o.order_id) AS order_count\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nJOIN olist_order_payments op ON op.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01';",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3643,
+            "completion_tokens": 221,
+            "total_tokens": 3864,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 86
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 187
+          },
+          {
+            "prompt_tokens": 3917,
+            "completion_tokens": 17,
+            "total_tokens": 3934,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 4
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 205
+          }
+        ]
+      },
+      "H06": {
+        "case_id": "H06",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.11,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              "boleto",
+              193413.41
+            ],
+            [
+              "credit_card",
+              775887.27
+            ],
+            [
+              "debit_card",
+              38863.17
+            ],
+            [
+              "voucher",
+              19740.01
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT p.payment_type, ROUND(SUM(p.payment_value), 2) AS payment_amount\nFROM olist_order_payments p\nJOIN olist_orders o ON o.order_id = p.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\nGROUP BY p.payment_type\nORDER BY p.payment_type ASC;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3638,
+            "completion_tokens": 236,
+            "total_tokens": 3874,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 96
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 182
+          },
+          {
+            "prompt_tokens": 3973,
+            "completion_tokens": 94,
+            "total_tokens": 4067,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 48
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 261
+          }
+        ]
+      },
+      "H07": {
+        "case_id": "H07",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.25,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              "RJ",
+              97033.4
+            ],
+            [
+              "SP",
+              321647.25
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT c.customer_state, ROUND(SUM(oi.price), 2) AS gmv\nFROM olist_orders o\nJOIN olist_customers c ON c.customer_id = o.customer_id\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND c.customer_state IN ('SP','RJ')\nGROUP BY c.customer_state\nORDER BY c.customer_state ASC;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3637,
+            "completion_tokens": 175,
+            "total_tokens": 3812,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 4
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 181
+          },
+          {
+            "prompt_tokens": 3885,
+            "completion_tokens": 25,
+            "total_tokens": 3910,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 173
+          }
+        ]
+      },
+      "H08": {
+        "case_id": "H08",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.12,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              140.92
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price) * 1.0 / COUNT(DISTINCT o.order_id), 2) AS aov FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3640,
+            "completion_tokens": 133,
+            "total_tokens": 3773,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 4
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 184
+          },
+          {
+            "prompt_tokens": 3827,
+            "completion_tokens": 14,
+            "total_tokens": 3841,
+            "prompt_tokens_details": {
+              "cached_tokens": 3584
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3584,
+            "prompt_cache_miss_tokens": 243
+          }
+        ]
+      },
+      "H09": {
+        "case_id": "H09",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 3.86,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              44804.02,
+              313
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH eligible AS (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2018-07-31'\n    AND o.order_purchase_timestamp < '2018-08-01'\n    AND EXISTS (\n      SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n    )\n)\nSELECT ROUND(SUM(oi.price), 2) AS amount,\n       COUNT(DISTINCT oi.order_id) AS order_count\nFROM eligible e\nLEFT JOIN olist_order_items oi ON oi.order_id = e.order_id;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3671,
+            "completion_tokens": 513,
+            "total_tokens": 4184,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 337
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 215
+          },
+          {
+            "prompt_tokens": 4246,
+            "completion_tokens": 17,
+            "total_tokens": 4263,
+            "prompt_tokens_details": {
+              "cached_tokens": 4096
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 4096,
+            "prompt_cache_miss_tokens": 150
+          }
+        ]
+      },
+      "H10": {
+        "case_id": "H10",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 2.25,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              null,
+              0
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "SELECT ROUND(SUM(oi.price), 2) AS product_amount, COUNT(DISTINCT o.order_id) AS delivered_orders FROM olist_orders o JOIN olist_order_items oi ON oi.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_purchase_timestamp >= '2015-01-01' AND o.order_purchase_timestamp < '2015-02-01'",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 131,
+            "total_tokens": 3794,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 3
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 3854,
+            "completion_tokens": 14,
+            "total_tokens": 3868,
+            "prompt_tokens_details": {
+              "cached_tokens": 3712
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 3712,
+            "prompt_cache_miss_tokens": 142
+          }
+        ]
+      },
+      "H11": {
+        "case_id": "H11",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 6.23,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              1153364.2,
+              7289
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH filtered_orders AS (\n  SELECT o.order_id\n  FROM olist_orders o\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2017-11-01'\n    AND o.order_purchase_timestamp < '2017-12-01'\n    AND EXISTS (\n      SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n    )\n),\nitem_by_order AS (\n  SELECT oi.order_id, SUM(oi.price + oi.freight_value) AS amount\n  FROM olist_order_items oi\n  JOIN filtered_orders fo ON fo.order_id = oi.order_id\n  GROUP BY oi.order_id\n)\nSELECT ROUND(SUM(amount), 2) AS amount, COUNT(*) AS order_count\nFROM item_by_order;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3669,
+            "completion_tokens": 562,
+            "total_tokens": 4231,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 349
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 213
+          },
+          {
+            "prompt_tokens": 4295,
+            "completion_tokens": 223,
+            "total_tokens": 4518,
+            "prompt_tokens_details": {
+              "cached_tokens": 4096
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 204
+            },
+            "prompt_cache_hit_tokens": 4096,
+            "prompt_cache_miss_tokens": 199
+          }
+        ]
+      },
+      "H12": {
+        "case_id": "H12",
+        "split": "reserved",
+        "completed": true,
+        "final_correct": true,
+        "last_sql_correct": true,
+        "failure": null,
+        "elapsed_seconds": 7.16,
+        "model_calls": 2,
+        "recorded_last_sql_correct_before_row_normalization": false,
+        "sql_calls": 1,
+        "executed_queries": 1,
+        "gate_rejections": 0,
+        "rejected_queries_matching_reference": 0,
+        "final": {
+          "status": "ok",
+          "rows": [
+            [
+              867953.46
+            ]
+          ]
+        },
+        "sql_trace": [
+          {
+            "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_total\n  FROM olist_order_items\n  GROUP BY order_id\n), payment_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_total\n  FROM olist_order_payments\n  GROUP BY order_id\n), alloc AS (\n  SELECT\n    o.order_id,\n    SUM(p.payment_value * i.item_total / pay.payment_total) AS allocated_amount\n  FROM olist_orders o\n  JOIN item_by_order i ON i.order_id = o.order_id\n  JOIN payment_by_order pay ON pay.order_id = o.order_id\n  JOIN olist_order_payments p ON p.order_id = o.order_id\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2018-07-01'\n    AND o.order_purchase_timestamp < '2018-08-01'\n    AND pay.payment_total > 0\n  GROUP BY o.order_id\n)\nSELECT ROUND(SUM(allocated_amount), 2) AS allocated_total\nFROM alloc;",
+            "error_code": null
+          }
+        ],
+        "usage": [
+          {
+            "prompt_tokens": 3663,
+            "completion_tokens": 499,
+            "total_tokens": 4162,
+            "prompt_tokens_details": {
+              "cached_tokens": 3456
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 228
+            },
+            "prompt_cache_hit_tokens": 3456,
+            "prompt_cache_miss_tokens": 207
+          },
+          {
+            "prompt_tokens": 4217,
+            "completion_tokens": 20,
+            "total_tokens": 4237,
+            "prompt_tokens_details": {
+              "cached_tokens": 3968
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 5
+            },
+            "prompt_cache_hit_tokens": 3968,
+            "prompt_cache_miss_tokens": 249
+          }
+        ]
+      }
+    }
+  }
+}
