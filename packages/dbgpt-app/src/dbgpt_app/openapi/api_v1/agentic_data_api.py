@@ -3047,8 +3047,14 @@ async def _react_agent_stream_impl(
         and os.environ.get("DATATRAIL_GRAIN_GUARD") == "1"
         and not dashboard_agent_mode
     ):
+        from dbgpt_app.commerce_time import time_contract
+
+        react_state["_commerce_time_contract"] = time_contract(user_input)
         database_context += """
 ## Olist 业务证据边界
+- 日期范围必须明确按下单还是实际送达归属；“已交付”只说明订单状态，
+  不自动表示按送达日期统计。用户未明确时间字段时，先用 question 确认。
+  取消或未回答时不要猜测口径；明确要求默认口径时按下单时间并说明。
 - 商品金额使用 price，运费为独立的 freight_value。不能仅凭 price 字段名
   判断价格是否已扣优惠券、是否含税或是否完成退款；当前数据未提供这些口径的证明。
   被问到这些问题时，应明确无法从当前数据确认，并说明需要补充的数据。
@@ -3082,6 +3088,8 @@ async def _react_agent_stream_impl(
     report_tools = traceable_report_capability.tools
     todowrite_tool = make_todowrite(_todo_list, stream_callback)
     question_tool = make_question(react_state, stream_callback)
+    if "_commerce_time_contract" in react_state:
+        react_state["_commerce_time_question"] = question_tool
     dashboard_planner_tools = make_dashboard_planner_tools(
         react_state=react_state,
         database_connector=database_connector,

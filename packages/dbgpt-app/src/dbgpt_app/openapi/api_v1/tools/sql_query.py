@@ -2,7 +2,6 @@
 
 import asyncio
 import json
-import os
 import time
 from functools import wraps
 from threading import Event
@@ -132,33 +131,13 @@ def make_sql_query(
                 ensure_ascii=False,
             )
         started = time.perf_counter()
-        if os.environ.get("DATATRAIL_GRAIN_GUARD") == "1":
-            from dbgpt_app.commerce_grain import grain_review
+        from .commerce_review import review_commerce_query
 
-            try:
-                review = grain_review(
-                    sql_stripped, getattr(database_connector, "dialect", "sqlite")
-                )
-            except Exception:
-                review = {
-                    "code": "COMMERCE_SQL_REVIEW_UNAVAILABLE",
-                    "reason": "粒度检查未完成，未执行该查询。请简化 SQL 后重试。",
-                }
-            if review:
-                return json.dumps(
-                    {
-                        "success": False,
-                        "error_code": review["code"],
-                        "grain_review": review,
-                        "chunks": [
-                            {
-                                "output_type": "text",
-                                "content": json.dumps(review, ensure_ascii=False),
-                            }
-                        ],
-                    },
-                    ensure_ascii=False,
-                )
+        review = await review_commerce_query(
+            react_state, sql_stripped, getattr(database_connector, "dialect", "sqlite")
+        )
+        if review:
+            return json.dumps(review, ensure_ascii=False)
         cancel_event = Event()
         try:
             if _supports_cooperative_query(database_connector):

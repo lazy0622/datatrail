@@ -82,6 +82,15 @@ def make_chart_query(react_state: Dict[str, Any], database_connector: Optional[A
                 },
                 ensure_ascii=False,
             )
+        from .commerce_review import review_commerce_query
+
+        review = await review_commerce_query(
+            react_state,
+            normalized_sql,
+            getattr(database_connector, "dialect", "sqlite"),
+        )
+        if review:
+            return json.dumps(review, ensure_ascii=False)
         try:
             artifact_sink = react_state.get("_report_artifact_sink")
             database_name = connector_database_name(database_connector, artifact_sink)

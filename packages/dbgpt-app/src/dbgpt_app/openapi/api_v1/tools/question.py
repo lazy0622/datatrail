@@ -132,6 +132,26 @@ def make_question(react_state: Dict[str, Any], stream_callback: Callable):
             )
 
         # 1. Register in QuestionManager → creates asyncio.Event
+        if "_commerce_time_contract" in react_state:
+            from dbgpt_app.commerce_time import note_time_question
+
+            if not note_time_question(react_state, parsed_questions):
+                return json.dumps(
+                    {
+                        "success": False,
+                        "error_code": "COMMERCE_TIME_BASIS_REQUIRED",
+                        "chunks": [
+                            {
+                                "output_type": "text",
+                                "content": (
+                                    "时间口径已询问但未确认，本轮停止相关查询，"
+                                    "不重复弹出问题。"
+                                ),
+                            }
+                        ],
+                    },
+                    ensure_ascii=False,
+                )
         pq = question_manager.create(conv_id=conv_id, questions=parsed_questions)
 
         # 2. Push question.asked SSE event to frontend
@@ -197,6 +217,10 @@ def make_question(react_state: Dict[str, Any], stream_callback: Callable):
 
         # 5. Format answers for the LLM
         answers = pq.answers or []
+        if "_commerce_time_contract" in react_state:
+            from dbgpt_app.commerce_time import apply_time_answers
+
+            apply_time_answers(react_state, answers)
         parts = []
         for i, q in enumerate(parsed_questions):
             q_text = q.get("question", "")
@@ -213,7 +237,10 @@ def make_question(react_state: Dict[str, Any], stream_callback: Callable):
             " in mind."
         )
         return json.dumps(
-            {"chunks": [{"output_type": "text", "content": output}]},
+            {
+                "answers": answers,
+                "chunks": [{"output_type": "text", "content": output}],
+            },
             ensure_ascii=False,
         )
 
