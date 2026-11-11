@@ -1,0 +1,1172 @@
+{
+  "tier": "synthetic_fixture_injected_challenge_and_authored_prospective_probe",
+  "run_label": "nov11-reviewed",
+  "state": "completed",
+  "settings": {
+    "model": "deepseek-flash",
+    "thinking": "enabled",
+    "reasoning_effort": "high",
+    "rounds": 6,
+    "sql_calls": 8,
+    "case_timeout_seconds": 90,
+    "concurrency": 1,
+    "order": "B then C per case; one sample, no retry",
+    "cases_sha256": "c347474558ce7805f574326ae19c815598b6de9bf866e6362d46eea8b91d13cf",
+    "fixture_source_sha256": "8165fff0f589f97d5ea0cda978a3f02a03f50fc0b1c57746f2a444b3608b8d15",
+    "runner_sha256": "ca3e083174a35b9172d0065958208a9f2ebb163e2c6ff560d755b26110e760b4",
+    "evaluator_sha256": "595006e8600ad6d85f059a476afae265a424af2c477c1d5319b28ce4401e95dd",
+    "gate_sha256": "e6884bb03a773f2d1e86d58882fd1231c389b935670b568e1bf312e19504f575",
+    "governance_sha256": "3bbc30baf8addc795153ef476d9baf28549f4b37396e1d7671872d9ee013d11c"
+  },
+  "notes": [
+    "Frozen before any model request; parent review required before running.",
+    "I01/I02 explicitly force supplied SQL first; no natural failure-rate claim.",
+    "N01/N02 do not supply SQL, but were written by the same evaluator and are not an independent held-out benchmark.",
+    "Reference SQL and expected rows stay in grading only, outside model messages.",
+    "B/C both get full upstream governance; only grain gate differs.",
+    "Synthetic first-SQL instructions are explicit in I01/I02.",
+    "Same author/fixture, small sample; no natural accuracy/generalization claim.",
+    "Fixed order and provider caching confound timing; no speedup claim.",
+    "Usage is provider-reported, not billed currency cost."
+  ],
+  "results": [
+    {
+      "case_id": "I01",
+      "split": "injected_challenge",
+      "arm": "B",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": false,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            56.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 7.08,
+      "model_calls": 4,
+      "tools": [
+        {
+          "sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "error_code": null
+        },
+        {
+          "sql": "WITH items AS (\n  SELECT order_id, SUM(price + freight_value) AS amt,\n         COUNT(*) AS n_lines\n  FROM olist_order_items\n  GROUP BY order_id\n), pay AS (\n  SELECT DISTINCT order_id FROM olist_order_payments\n)\nSELECT ROUND(SUM(i.amt), 2) AS total_with_freight,\n       COUNT(*) AS orders_cnt\nFROM olist_orders o\nJOIN items i ON i.order_id = o.order_id\nJOIN pay p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'",
+          "error_code": null
+        },
+        {
+          "sql": "SELECT o.order_id, o.order_status, o.order_purchase_timestamp,\n       (SELECT ROUND(SUM(price+freight_value),2) FROM olist_order_items i WHERE i.order_id=o.order_id) AS item_amt,\n       (SELECT COUNT(*) FROM olist_order_items i WHERE i.order_id=o.order_id) AS item_lines,\n       (SELECT COUNT(*) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_rows\nFROM olist_orders o\nWHERE o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01'\nORDER BY o.order_id",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "rows": [
+            [
+              79.0
+            ]
+          ],
+          "columns": [
+            "SUM(i.price+i.freight_value)"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "WITH items AS (\n  SELECT order_id, SUM(price + freight_value) AS amt,\n         COUNT(*) AS n_lines\n  FROM olist_order_items\n  GROUP BY order_id\n), pay AS (\n  SELECT DISTINCT order_id FROM olist_order_payments\n)\nSELECT ROUND(SUM(i.amt), 2) AS total_with_freight,\n       COUNT(*) AS orders_cnt\nFROM olist_orders o\nJOIN items i ON i.order_id = o.order_id\nJOIN pay p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'",
+          "rows": [
+            [
+              56.0,
+              2
+            ]
+          ],
+          "columns": [
+            "total_with_freight",
+            "orders_cnt"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "SELECT o.order_id, o.order_status, o.order_purchase_timestamp,\n       (SELECT ROUND(SUM(price+freight_value),2) FROM olist_order_items i WHERE i.order_id=o.order_id) AS item_amt,\n       (SELECT COUNT(*) FROM olist_order_items i WHERE i.order_id=o.order_id) AS item_lines,\n       (SELECT COUNT(*) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_rows\nFROM olist_orders o\nWHERE o.order_purchase_timestamp >= '2018-07-01' AND o.order_purchase_timestamp < '2018-08-01'\nORDER BY o.order_id",
+          "rows": [
+            [
+              "o1",
+              "delivered",
+              "2018-07-02",
+              23.0,
+              2,
+              2
+            ],
+            [
+              "o2",
+              "delivered",
+              "2018-07-03",
+              33.0,
+              2,
+              1
+            ],
+            [
+              "o3",
+              "canceled",
+              "2018-07-03",
+              108.0,
+              1,
+              1
+            ]
+          ],
+          "columns": [
+            "order_id",
+            "order_status",
+            "order_purchase_timestamp",
+            "item_amt",
+            "item_lines",
+            "pay_rows"
+          ],
+          "row_count": 3
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 156
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 655
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 94
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 370
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 3095,
+          "completion_tokens": 156,
+          "total_tokens": 3251,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 35
+          },
+          "prompt_cache_hit_tokens": 0,
+          "prompt_cache_miss_tokens": 3095
+        },
+        {
+          "prompt_tokens": 3312,
+          "completion_tokens": 354,
+          "total_tokens": 3666,
+          "prompt_tokens_details": {
+            "cached_tokens": 3072
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 157
+          },
+          "prompt_cache_hit_tokens": 3072,
+          "prompt_cache_miss_tokens": 240
+        },
+        {
+          "prompt_tokens": 3731,
+          "completion_tokens": 204,
+          "total_tokens": 3935,
+          "prompt_tokens_details": {
+            "cached_tokens": 3584
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 22
+          },
+          "prompt_cache_hit_tokens": 3584,
+          "prompt_cache_miss_tokens": 147
+        },
+        {
+          "prompt_tokens": 4091,
+          "completion_tokens": 146,
+          "total_tokens": 4237,
+          "prompt_tokens_details": {
+            "cached_tokens": 3840
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 132
+          },
+          "prompt_cache_hit_tokens": 3840,
+          "prompt_cache_miss_tokens": 251
+        }
+      ],
+      "protocol_adherence": true,
+      "gate_rejections": 0
+    },
+    {
+      "case_id": "I01",
+      "split": "injected_challenge",
+      "arm": "C",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": false,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            56.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 5.59,
+      "model_calls": 4,
+      "tools": [
+        {
+          "sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "error_code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+          "rejected_rows_match_reference": false
+        },
+        {
+          "sql": "SELECT ROUND(SUM(t.amt), 2) AS amount\nFROM (\n  SELECT o.order_id, SUM(i.price + i.freight_value) AS amt\n  FROM olist_orders o\n  JOIN olist_order_items i ON i.order_id = o.order_id\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2018-07-01'\n    AND o.order_purchase_timestamp < '2018-08-01'\n    AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id)\n  GROUP BY o.order_id\n) t",
+          "error_code": null
+        },
+        {
+          "sql": "SELECT COUNT(DISTINCT o.order_id) AS orders, COUNT(*) AS item_rows, ROUND(SUM(i.price+i.freight_value),4) AS raw, ROUND(SUM(i.price),2) AS gmv, ROUND(SUM(i.freight_value),2) AS fr, MIN(o.order_purchase_timestamp) AS mn, MAX(o.order_purchase_timestamp) AS mx FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "SELECT ROUND(SUM(t.amt), 2) AS amount\nFROM (\n  SELECT o.order_id, SUM(i.price + i.freight_value) AS amt\n  FROM olist_orders o\n  JOIN olist_order_items i ON i.order_id = o.order_id\n  WHERE o.order_status = 'delivered'\n    AND o.order_purchase_timestamp >= '2018-07-01'\n    AND o.order_purchase_timestamp < '2018-08-01'\n    AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id)\n  GROUP BY o.order_id\n) t",
+          "rows": [
+            [
+              56.0
+            ]
+          ],
+          "columns": [
+            "amount"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "SELECT COUNT(DISTINCT o.order_id) AS orders, COUNT(*) AS item_rows, ROUND(SUM(i.price+i.freight_value),4) AS raw, ROUND(SUM(i.price),2) AS gmv, ROUND(SUM(i.freight_value),2) AS fr, MIN(o.order_purchase_timestamp) AS mn, MAX(o.order_purchase_timestamp) AS mx FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "rows": [
+            [
+              2,
+              4,
+              56.0,
+              50.0,
+              6.0,
+              "2018-07-02",
+              "2018-07-03"
+            ]
+          ],
+          "columns": [
+            "orders",
+            "item_rows",
+            "raw",
+            "gmv",
+            "fr",
+            "mn",
+            "mx"
+          ],
+          "row_count": 1
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 339
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 65
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 180
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 565
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 3095,
+          "completion_tokens": 205,
+          "total_tokens": 3300,
+          "prompt_tokens_details": {
+            "cached_tokens": 2944
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 84
+          },
+          "prompt_cache_hit_tokens": 2944,
+          "prompt_cache_miss_tokens": 151
+        },
+        {
+          "prompt_tokens": 3604,
+          "completion_tokens": 187,
+          "total_tokens": 3791,
+          "prompt_tokens_details": {
+            "cached_tokens": 3200
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 13
+          },
+          "prompt_cache_hit_tokens": 3200,
+          "prompt_cache_miss_tokens": 404
+        },
+        {
+          "prompt_tokens": 3844,
+          "completion_tokens": 228,
+          "total_tokens": 4072,
+          "prompt_tokens_details": {
+            "cached_tokens": 3584
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 48
+          },
+          "prompt_cache_hit_tokens": 3584,
+          "prompt_cache_miss_tokens": 260
+        },
+        {
+          "prompt_tokens": 4183,
+          "completion_tokens": 170,
+          "total_tokens": 4353,
+          "prompt_tokens_details": {
+            "cached_tokens": 3968
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 156
+          },
+          "prompt_cache_hit_tokens": 3968,
+          "prompt_cache_miss_tokens": 215
+        }
+      ],
+      "protocol_adherence": true,
+      "gate_rejections": 1
+    },
+    {
+      "case_id": "I02",
+      "split": "injected_challenge",
+      "arm": "B",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": false,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            58.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 7.73,
+      "model_calls": 5,
+      "tools": [
+        {
+          "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "error_code": null
+        },
+        {
+          "sql": "WITH item_orders AS (SELECT DISTINCT order_id FROM olist_order_items), pay AS (SELECT order_id, SUM(payment_value) AS pay_amt FROM olist_order_payments GROUP BY order_id) SELECT ROUND(SUM(pay.pay_amt),2) FROM olist_orders o JOIN item_orders io ON io.order_id=o.order_id JOIN pay ON pay.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "error_code": null
+        },
+        {
+          "sql": "SELECT (SELECT COUNT(*) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01') AS joined_rows, (SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)) AS order_cnt, (SELECT COUNT(*) FROM olist_orders o WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01') AS delivered_total",
+          "error_code": null
+        },
+        {
+          "sql": "SELECT o.order_id, (SELECT SUM(payment_value) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_amt, (SELECT COUNT(*) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_cnt, (SELECT COUNT(*) FROM olist_order_items i WHERE i.order_id=o.order_id) AS item_cnt FROM olist_orders o WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id) ORDER BY o.order_id",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "rows": [
+            [
+              116.0
+            ]
+          ],
+          "columns": [
+            "SUM(p.payment_value)"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "WITH item_orders AS (SELECT DISTINCT order_id FROM olist_order_items), pay AS (SELECT order_id, SUM(payment_value) AS pay_amt FROM olist_order_payments GROUP BY order_id) SELECT ROUND(SUM(pay.pay_amt),2) FROM olist_orders o JOIN item_orders io ON io.order_id=o.order_id JOIN pay ON pay.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "rows": [
+            [
+              58.0
+            ]
+          ],
+          "columns": [
+            "ROUND(SUM(pay.pay_amt),2)"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "SELECT (SELECT COUNT(*) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01') AS joined_rows, (SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)) AS order_cnt, (SELECT COUNT(*) FROM olist_orders o WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01') AS delivered_total",
+          "rows": [
+            [
+              6,
+              2,
+              2
+            ]
+          ],
+          "columns": [
+            "joined_rows",
+            "order_cnt",
+            "delivered_total"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "SELECT o.order_id, (SELECT SUM(payment_value) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_amt, (SELECT COUNT(*) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_cnt, (SELECT COUNT(*) FROM olist_order_items i WHERE i.order_id=o.order_id) AS item_cnt FROM olist_orders o WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id) ORDER BY o.order_id",
+          "rows": [
+            [
+              "o1",
+              25.0,
+              2,
+              2
+            ],
+            [
+              "o2",
+              33.0,
+              1,
+              2
+            ]
+          ],
+          "columns": [
+            "order_id",
+            "pay_amt",
+            "pay_cnt",
+            "item_cnt"
+          ],
+          "row_count": 2
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 380
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 283
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 97
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 112
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 0
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 3090,
+          "completion_tokens": 210,
+          "total_tokens": 3300,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 92
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 274
+        },
+        {
+          "prompt_tokens": 3358,
+          "completion_tokens": 229,
+          "total_tokens": 3587,
+          "prompt_tokens_details": {
+            "cached_tokens": 3200
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 66
+          },
+          "prompt_cache_hit_tokens": 3200,
+          "prompt_cache_miss_tokens": 158
+        },
+        {
+          "prompt_tokens": 3652,
+          "completion_tokens": 278,
+          "total_tokens": 3930,
+          "prompt_tokens_details": {
+            "cached_tokens": 3456
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 26
+          },
+          "prompt_cache_hit_tokens": 3456,
+          "prompt_cache_miss_tokens": 196
+        },
+        {
+          "prompt_tokens": 3998,
+          "completion_tokens": 216,
+          "total_tokens": 4214,
+          "prompt_tokens_details": {
+            "cached_tokens": 3840
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 29
+          },
+          "prompt_cache_hit_tokens": 3840,
+          "prompt_cache_miss_tokens": 158
+        },
+        {
+          "prompt_tokens": 4310,
+          "completion_tokens": 14,
+          "total_tokens": 4324,
+          "prompt_tokens_details": {
+            "cached_tokens": 4096
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_cache_hit_tokens": 4096,
+          "prompt_cache_miss_tokens": 214
+        }
+      ],
+      "protocol_adherence": true,
+      "gate_rejections": 0
+    },
+    {
+      "case_id": "I02",
+      "split": "injected_challenge",
+      "arm": "C",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": true,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            58.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 6.39,
+      "model_calls": 3,
+      "tools": [
+        {
+          "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+          "error_code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+          "rejected_rows_match_reference": false
+        },
+        {
+          "sql": "WITH payment_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_amount\n  FROM olist_order_payments\n  GROUP BY order_id\n)\nSELECT ROUND(SUM(pb.payment_amount), 2)\nFROM olist_orders o\nJOIN payment_by_order pb ON pb.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_items i WHERE i.order_id = o.order_id\n  )",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "WITH payment_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_amount\n  FROM olist_order_payments\n  GROUP BY order_id\n)\nSELECT ROUND(SUM(pb.payment_amount), 2)\nFROM olist_orders o\nJOIN payment_by_order pb ON pb.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_items i WHERE i.order_id = o.order_id\n  )",
+          "rows": [
+            [
+              58.0
+            ]
+          ],
+          "columns": [
+            "ROUND(SUM(pb.payment_amount), 2)"
+          ],
+          "row_count": 1
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 368
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 341
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 935
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 3090,
+          "completion_tokens": 192,
+          "total_tokens": 3282,
+          "prompt_tokens_details": {
+            "cached_tokens": 2944
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 74
+          },
+          "prompt_cache_hit_tokens": 2944,
+          "prompt_cache_miss_tokens": 146
+        },
+        {
+          "prompt_tokens": 3578,
+          "completion_tokens": 256,
+          "total_tokens": 3834,
+          "prompt_tokens_details": {
+            "cached_tokens": 3200
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 80
+          },
+          "prompt_cache_hit_tokens": 3200,
+          "prompt_cache_miss_tokens": 378
+        },
+        {
+          "prompt_tokens": 3899,
+          "completion_tokens": 273,
+          "total_tokens": 4172,
+          "prompt_tokens_details": {
+            "cached_tokens": 3712
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 259
+          },
+          "prompt_cache_hit_tokens": 3712,
+          "prompt_cache_miss_tokens": 187
+        }
+      ],
+      "protocol_adherence": true,
+      "gate_rejections": 1
+    },
+    {
+      "case_id": "N01",
+      "split": "authored_prospective_probe_not_independent_heldout",
+      "arm": "B",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": false,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            50.0,
+            58.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 6.89,
+      "model_calls": 3,
+      "tools": [
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount\n  FROM olist_order_items\n  GROUP BY order_id\n),\npayment_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_amount\n  FROM olist_order_payments\n  GROUP BY order_id\n)\nSELECT ROUND(SUM(i.item_amount), 2) AS product_gmv,\n       ROUND(SUM(p.payment_amount), 2) AS payment_total\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id = o.order_id\nJOIN payment_by_order p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01';",
+          "error_code": null
+        },
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount\n  FROM olist_order_items GROUP BY order_id\n), payment_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_amount\n  FROM olist_order_payments GROUP BY order_id\n)\nSELECT COUNT(*) AS order_cnt,\n       COUNT(DISTINCT o.order_id) AS distinct_order_cnt,\n       SUM(i.item_amount) AS raw_item,\n       SUM(p.payment_amount) AS raw_payment\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id=o.order_id\nJOIN payment_by_order p ON p.order_id=o.order_id\nWHERE o.order_status='delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01';",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount\n  FROM olist_order_items\n  GROUP BY order_id\n),\npayment_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_amount\n  FROM olist_order_payments\n  GROUP BY order_id\n)\nSELECT ROUND(SUM(i.item_amount), 2) AS product_gmv,\n       ROUND(SUM(p.payment_amount), 2) AS payment_total\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id = o.order_id\nJOIN payment_by_order p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'",
+          "rows": [
+            [
+              50.0,
+              58.0
+            ]
+          ],
+          "columns": [
+            "product_gmv",
+            "payment_total"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount\n  FROM olist_order_items GROUP BY order_id\n), payment_by_order AS (\n  SELECT order_id, SUM(payment_value) AS payment_amount\n  FROM olist_order_payments GROUP BY order_id\n)\nSELECT COUNT(*) AS order_cnt,\n       COUNT(DISTINCT o.order_id) AS distinct_order_cnt,\n       SUM(i.item_amount) AS raw_item,\n       SUM(p.payment_amount) AS raw_payment\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id=o.order_id\nJOIN payment_by_order p ON p.order_id=o.order_id\nWHERE o.order_status='delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'",
+          "rows": [
+            [
+              2,
+              2,
+              50.0,
+              58.0
+            ]
+          ],
+          "columns": [
+            "order_cnt",
+            "distinct_order_cnt",
+            "raw_item",
+            "raw_payment"
+          ],
+          "row_count": 1
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 507
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 623
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 726
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 2983,
+          "completion_tokens": 330,
+          "total_tokens": 3313,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 112
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 167
+        },
+        {
+          "prompt_tokens": 3378,
+          "completion_tokens": 367,
+          "total_tokens": 3745,
+          "prompt_tokens_details": {
+            "cached_tokens": 3200
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 145
+          },
+          "prompt_cache_hit_tokens": 3200,
+          "prompt_cache_miss_tokens": 178
+        },
+        {
+          "prompt_tokens": 3827,
+          "completion_tokens": 212,
+          "total_tokens": 4039,
+          "prompt_tokens_details": {
+            "cached_tokens": 3584
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 194
+          },
+          "prompt_cache_hit_tokens": 3584,
+          "prompt_cache_miss_tokens": 243
+        }
+      ],
+      "protocol_adherence": null,
+      "gate_rejections": 0
+    },
+    {
+      "case_id": "N01",
+      "split": "authored_prospective_probe_not_independent_heldout",
+      "arm": "C",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": false,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            50.0,
+            58.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 6.02,
+      "model_calls": 4,
+      "tools": [
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount\n  FROM olist_order_items\n  GROUP BY order_id\n), pay_by_order AS (\n  SELECT order_id, SUM(payment_value) AS pay_amount\n  FROM olist_order_payments\n  GROUP BY order_id\n)\nSELECT ROUND(SUM(i.item_amount), 2) AS product_gmv,\n       ROUND(SUM(p.pay_amount), 2) AS payment_total\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id = o.order_id\nJOIN pay_by_order p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01';",
+          "error_code": null
+        },
+        {
+          "sql": "SELECT COUNT(DISTINCT o.order_id) AS n_orders,\n       (SELECT COUNT(*) FROM olist_order_items) AS total_items,\n       (SELECT COUNT(*) FROM olist_order_payments) AS total_pays\nFROM olist_orders o\nWHERE o.order_status='delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01';",
+          "error_code": null
+        },
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount FROM olist_order_items GROUP BY order_id\n), pay_by_order AS (\n  SELECT order_id, SUM(payment_value) AS pay_amount FROM olist_order_payments GROUP BY order_id\n)\nSELECT o.order_id, i.item_amount, p.pay_amount\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id=o.order_id\nJOIN pay_by_order p ON p.order_id=o.order_id\nWHERE o.order_status='delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\nORDER BY o.order_id;",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount\n  FROM olist_order_items\n  GROUP BY order_id\n), pay_by_order AS (\n  SELECT order_id, SUM(payment_value) AS pay_amount\n  FROM olist_order_payments\n  GROUP BY order_id\n)\nSELECT ROUND(SUM(i.item_amount), 2) AS product_gmv,\n       ROUND(SUM(p.pay_amount), 2) AS payment_total\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id = o.order_id\nJOIN pay_by_order p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'",
+          "rows": [
+            [
+              50.0,
+              58.0
+            ]
+          ],
+          "columns": [
+            "product_gmv",
+            "payment_total"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "SELECT COUNT(DISTINCT o.order_id) AS n_orders,\n       (SELECT COUNT(*) FROM olist_order_items) AS total_items,\n       (SELECT COUNT(*) FROM olist_order_payments) AS total_pays\nFROM olist_orders o\nWHERE o.order_status='delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'",
+          "rows": [
+            [
+              2,
+              5,
+              4
+            ]
+          ],
+          "columns": [
+            "n_orders",
+            "total_items",
+            "total_pays"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "WITH item_by_order AS (\n  SELECT order_id, SUM(price) AS item_amount FROM olist_order_items GROUP BY order_id\n), pay_by_order AS (\n  SELECT order_id, SUM(payment_value) AS pay_amount FROM olist_order_payments GROUP BY order_id\n)\nSELECT o.order_id, i.item_amount, p.pay_amount\nFROM olist_orders o\nJOIN item_by_order i ON i.order_id=o.order_id\nJOIN pay_by_order p ON p.order_id=o.order_id\nWHERE o.order_status='delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\nORDER BY o.order_id",
+          "rows": [
+            [
+              "o1",
+              20.0,
+              25.0
+            ],
+            [
+              "o2",
+              30.0,
+              33.0
+            ]
+          ],
+          "columns": [
+            "order_id",
+            "item_amount",
+            "pay_amount"
+          ],
+          "row_count": 2
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 435
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 285
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 93
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 0
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 2983,
+          "completion_tokens": 319,
+          "total_tokens": 3302,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 101
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 167
+        },
+        {
+          "prompt_tokens": 3367,
+          "completion_tokens": 200,
+          "total_tokens": 3567,
+          "prompt_tokens_details": {
+            "cached_tokens": 3200
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 68
+          },
+          "prompt_cache_hit_tokens": 3200,
+          "prompt_cache_miss_tokens": 167
+        },
+        {
+          "prompt_tokens": 3637,
+          "completion_tokens": 221,
+          "total_tokens": 3858,
+          "prompt_tokens_details": {
+            "cached_tokens": 3456
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 27
+          },
+          "prompt_cache_hit_tokens": 3456,
+          "prompt_cache_miss_tokens": 181
+        },
+        {
+          "prompt_tokens": 3946,
+          "completion_tokens": 19,
+          "total_tokens": 3965,
+          "prompt_tokens_details": {
+            "cached_tokens": 3712
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_cache_hit_tokens": 3712,
+          "prompt_cache_miss_tokens": 234
+        }
+      ],
+      "protocol_adherence": null,
+      "gate_rejections": 0
+    },
+    {
+      "case_id": "N02",
+      "split": "authored_prospective_probe_not_independent_heldout",
+      "arm": "B",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": false,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            56.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 4.97,
+      "model_calls": 4,
+      "tools": [
+        {
+          "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS total_amount\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id);",
+          "error_code": null
+        },
+        {
+          "sql": "SELECT o.order_id, COUNT(*) AS n_items, SUM(oi.price+oi.freight_value) AS amt, o.order_purchase_timestamp\nFROM olist_orders o JOIN olist_order_items oi ON oi.order_id=o.order_id\nWHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'\nGROUP BY o.order_id;",
+          "error_code": null
+        },
+        {
+          "sql": "SELECT o.order_id, (SELECT COUNT(*) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_cnt\nFROM olist_orders o WHERE o.order_id IN ('o1','o2');",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS total_amount\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id)",
+          "rows": [
+            [
+              56.0
+            ]
+          ],
+          "columns": [
+            "total_amount"
+          ],
+          "row_count": 1
+        },
+        {
+          "sql": "SELECT o.order_id, COUNT(*) AS n_items, SUM(oi.price+oi.freight_value) AS amt, o.order_purchase_timestamp\nFROM olist_orders o JOIN olist_order_items oi ON oi.order_id=o.order_id\nWHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'\nGROUP BY o.order_id",
+          "rows": [
+            [
+              "o1",
+              2,
+              23.0,
+              "2018-07-02"
+            ],
+            [
+              "o2",
+              2,
+              33.0,
+              "2018-07-03"
+            ]
+          ],
+          "columns": [
+            "order_id",
+            "n_items",
+            "amt",
+            "order_purchase_timestamp"
+          ],
+          "row_count": 2
+        },
+        {
+          "sql": "SELECT o.order_id, (SELECT COUNT(*) FROM olist_order_payments p WHERE p.order_id=o.order_id) AS pay_cnt\nFROM olist_orders o WHERE o.order_id IN ('o1','o2')",
+          "rows": [
+            [
+              "o1",
+              2
+            ],
+            [
+              "o2",
+              1
+            ]
+          ],
+          "columns": [
+            "order_id",
+            "pay_cnt"
+          ],
+          "row_count": 2
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 300
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 184
+        },
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 69
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 0
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 2972,
+          "completion_tokens": 209,
+          "total_tokens": 3181,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 58
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 156
+        },
+        {
+          "prompt_tokens": 3235,
+          "completion_tokens": 183,
+          "total_tokens": 3418,
+          "prompt_tokens_details": {
+            "cached_tokens": 3072
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 46
+          },
+          "prompt_cache_hit_tokens": 3072,
+          "prompt_cache_miss_tokens": 163
+        },
+        {
+          "prompt_tokens": 3526,
+          "completion_tokens": 101,
+          "total_tokens": 3627,
+          "prompt_tokens_details": {
+            "cached_tokens": 3328
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 17
+          },
+          "prompt_cache_hit_tokens": 3328,
+          "prompt_cache_miss_tokens": 198
+        },
+        {
+          "prompt_tokens": 3696,
+          "completion_tokens": 14,
+          "total_tokens": 3710,
+          "prompt_tokens_details": {
+            "cached_tokens": 3456
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_cache_hit_tokens": 3456,
+          "prompt_cache_miss_tokens": 240
+        }
+      ],
+      "protocol_adherence": null,
+      "gate_rejections": 0
+    },
+    {
+      "case_id": "N02",
+      "split": "authored_prospective_probe_not_independent_heldout",
+      "arm": "C",
+      "completed": true,
+      "final_correct": true,
+      "last_sql_correct": true,
+      "final": {
+        "status": "ok",
+        "rows": [
+          [
+            56.0
+          ]
+        ]
+      },
+      "failure": null,
+      "elapsed_seconds": 4.25,
+      "model_calls": 2,
+      "tools": [
+        {
+          "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS amount\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n  );",
+          "error_code": null
+        }
+      ],
+      "executed_queries": [
+        {
+          "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS amount\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-07-01'\n  AND o.order_purchase_timestamp < '2018-08-01'\n  AND EXISTS (\n    SELECT 1 FROM olist_order_payments p WHERE p.order_id = o.order_id\n  )",
+          "rows": [
+            [
+              56.0
+            ]
+          ],
+          "columns": [
+            "amount"
+          ],
+          "row_count": 1
+        }
+      ],
+      "responses": [
+        {
+          "finish_reason": "tool_calls",
+          "reasoning_characters": 530
+        },
+        {
+          "finish_reason": "stop",
+          "reasoning_characters": 629
+        }
+      ],
+      "usage": [
+        {
+          "prompt_tokens": 2972,
+          "completion_tokens": 284,
+          "total_tokens": 3256,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 131
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 156
+        },
+        {
+          "prompt_tokens": 3309,
+          "completion_tokens": 182,
+          "total_tokens": 3491,
+          "prompt_tokens_details": {
+            "cached_tokens": 3072
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 168
+          },
+          "prompt_cache_hit_tokens": 3072,
+          "prompt_cache_miss_tokens": 237
+        }
+      ],
+      "protocol_adherence": null,
+      "gate_rejections": 0
+    }
+  ]
+}

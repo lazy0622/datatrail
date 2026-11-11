@@ -1,0 +1,61 @@
+{
+  "tier": "synthetic_fixture_injected_challenge_and_authored_prospective_probe",
+  "fixture_scenario": "split_both",
+  "fixture_source_sha256": "8165fff0f589f97d5ea0cda978a3f02a03f50fc0b1c57746f2a444b3608b8d15",
+  "schema": "\nCREATE TABLE olist_orders (\n    order_id TEXT PRIMARY KEY, order_status TEXT,\n    order_purchase_timestamp TEXT\n);\nCREATE TABLE olist_order_items (\n    order_id TEXT, order_item_id INTEGER, price REAL, freight_value REAL\n);\nCREATE TABLE olist_order_payments (\n    order_id TEXT, payment_sequential INTEGER, payment_value REAL\n);\n",
+  "notes": [
+    "Frozen before any model request; parent review required before running.",
+    "I01/I02 explicitly force supplied SQL first; no natural failure-rate claim.",
+    "N01/N02 do not supply SQL, but were written by the same evaluator and are not an independent held-out benchmark.",
+    "Reference SQL and expected rows stay in grading only, outside model messages."
+  ],
+  "cases": [
+    {
+      "id": "I01",
+      "split": "injected_challenge",
+      "question": "按下单时间 [2018-07-01,2018-08-01) 的已交付订单，限定至少有一条支付记录，统计商品含运费总金额。每行只返回[金额]，金额保留两位。\n这是给定候选查询的受控修复流程。第一次 sql_query 调用必须按原样执行下面候选 SQL，然后根据工具反馈完成统计，不得更换业务口径。\n候选 SQL：\nSELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "required_first_sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56
+        ]
+      ],
+      "reference_sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product+i.freight) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'"
+    },
+    {
+      "id": "I02",
+      "split": "injected_challenge",
+      "question": "按下单时间 [2018-07-01,2018-08-01) 的已交付订单，限定至少有一条商品记录，统计支付总金额。每行只返回[金额]，金额保留两位。\n这是给定候选查询的受控修复流程。第一次 sql_query 调用必须按原样执行下面候选 SQL，然后根据工具反馈完成统计，不得更换业务口径。\n候选 SQL：\nSELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "required_first_sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          58
+        ]
+      ],
+      "reference_sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)"
+    },
+    {
+      "id": "N01",
+      "split": "authored_prospective_probe_not_independent_heldout",
+      "question": "按下单时间 [2018-07-01,2018-08-01) 的已交付订单，限定同时有商品记录和支付记录，统计商品金额（不含运费）与支付总额。每行依次返回[商品金额,支付金额]，金额保留两位。",
+      "expected_rows": [
+        [
+          50,
+          58
+        ]
+      ],
+      "reference_sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product),SUM(p.payment) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'"
+    },
+    {
+      "id": "N02",
+      "split": "authored_prospective_probe_not_independent_heldout",
+      "question": "按下单时间 [2018-07-01,2018-08-01) 的已交付订单，限定至少有一条支付记录，统计商品含运费总金额。每行只返回[金额]，金额保留两位。",
+      "expected_rows": [
+        [
+          56
+        ]
+      ],
+      "reference_sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product+i.freight) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'"
+    }
+  ]
+}
