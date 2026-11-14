@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "database": "Chinook.sqlite",
+  "database_sha256": "7651ba378ac2fcd0dfc3c66fb101f7a7eed3ba39a612ec642b96e20702061f15",
+  "schema": "CREATE TABLE [Album]\n(\n    [AlbumId] INTEGER  NOT NULL,\n    [Title] NVARCHAR(160)  NOT NULL,\n    [ArtistId] INTEGER  NOT NULL,\n    CONSTRAINT [PK_Album] PRIMARY KEY  ([AlbumId]),\n    FOREIGN KEY ([ArtistId]) REFERENCES [Artist] ([ArtistId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)\nCREATE TABLE [Artist]\n(\n    [ArtistId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_Artist] PRIMARY KEY  ([ArtistId])\n)\nCREATE TABLE [Customer]\n(\n    [CustomerId] INTEGER  NOT NULL,\n    [FirstName] NVARCHAR(40)  NOT NULL,\n    [LastName] NVARCHAR(20)  NOT NULL,\n    [Company] NVARCHAR(80),\n    [Address] NVARCHAR(70),\n    [City] NVARCHAR(40),\n    [State] NVARCHAR(40),\n    [Country] NVARCHAR(40),\n    [PostalCode] NVARCHAR(10),\n    [Phone] NVARCHAR(24),\n    [Fax] NVARCHAR(24),\n    [Email] NVARCHAR(60)  NOT NULL,\n    [SupportRepId] INTEGER,\n    CONSTRAINT [PK_Customer] PRIMARY KEY  ([CustomerId]),\n    FOREIGN KEY ([SupportRepId]) REFERENCES [Employee] ([EmployeeId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)\nCREATE TABLE [Employee]\n(\n    [EmployeeId] INTEGER  NOT NULL,\n    [LastName] NVARCHAR(20)  NOT NULL,\n    [FirstName] NVARCHAR(20)  NOT NULL,\n    [Title] NVARCHAR(30),\n    [ReportsTo] INTEGER,\n    [BirthDate] DATETIME,\n    [HireDate] DATETIME,\n    [Address] NVARCHAR(70),\n    [City] NVARCHAR(40),\n    [State] NVARCHAR(40),\n    [Country] NVARCHAR(40),\n    [PostalCode] NVARCHAR(10),\n    [Phone] NVARCHAR(24),\n    [Fax] NVARCHAR(24),\n    [Email] NVARCHAR(60),\n    CONSTRAINT [PK_Employee] PRIMARY KEY  ([EmployeeId]),\n    FOREIGN KEY ([ReportsTo]) REFERENCES [Employee] ([EmployeeId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)\nCREATE TABLE [Genre]\n(\n    [GenreId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_Genre] PRIMARY KEY  ([GenreId])\n)\nCREATE TABLE [Invoice]\n(\n    [InvoiceId] INTEGER  NOT NULL,\n    [CustomerId] INTEGER  NOT NULL,\n    [InvoiceDate] DATETIME  NOT NULL,\n    [BillingAddress] NVARCHAR(70),\n    [BillingCity] NVARCHAR(40),\n    [BillingState] NVARCHAR(40),\n    [BillingCountry] NVARCHAR(40),\n    [BillingPostalCode] NVARCHAR(10),\n    [Total] NUMERIC(10,2)  NOT NULL,\n    CONSTRAINT [PK_Invoice] PRIMARY KEY  ([InvoiceId]),\n    FOREIGN KEY ([CustomerId]) REFERENCES [Customer] ([CustomerId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)\nCREATE TABLE [InvoiceLine]\n(\n    [InvoiceLineId] INTEGER  NOT NULL,\n    [InvoiceId] INTEGER  NOT NULL,\n    [TrackId] INTEGER  NOT NULL,\n    [UnitPrice] NUMERIC(10,2)  NOT NULL,\n    [Quantity] INTEGER  NOT NULL,\n    CONSTRAINT [PK_InvoiceLine] PRIMARY KEY  ([InvoiceLineId]),\n    FOREIGN KEY ([InvoiceId]) REFERENCES [Invoice] ([InvoiceId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION,\n    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)\nCREATE TABLE [MediaType]\n(\n    [MediaTypeId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_MediaType] PRIMARY KEY  ([MediaTypeId])\n)\nCREATE TABLE [Playlist]\n(\n    [PlaylistId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(120),\n    CONSTRAINT [PK_Playlist] PRIMARY KEY  ([PlaylistId])\n)\nCREATE TABLE [PlaylistTrack]\n(\n    [PlaylistId] INTEGER  NOT NULL,\n    [TrackId] INTEGER  NOT NULL,\n    CONSTRAINT [PK_PlaylistTrack] PRIMARY KEY  ([PlaylistId], [TrackId]),\n    FOREIGN KEY ([PlaylistId]) REFERENCES [Playlist] ([PlaylistId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION,\n    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)\nCREATE TABLE [Track]\n(\n    [TrackId] INTEGER  NOT NULL,\n    [Name] NVARCHAR(200)  NOT NULL,\n    [AlbumId] INTEGER,\n    [MediaTypeId] INTEGER  NOT NULL,\n    [GenreId] INTEGER,\n    [Composer] NVARCHAR(220),\n    [Milliseconds] INTEGER  NOT NULL,\n    [Bytes] INTEGER,\n    [UnitPrice] NUMERIC(10,2)  NOT NULL,\n    CONSTRAINT [PK_Track] PRIMARY KEY  ([TrackId]),\n    FOREIGN KEY ([AlbumId]) REFERENCES [Album] ([AlbumId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION,\n    FOREIGN KEY ([GenreId]) REFERENCES [Genre] ([GenreId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION,\n    FOREIGN KEY ([MediaTypeId]) REFERENCES [MediaType] ([MediaTypeId]) \n\t\tON DELETE NO ACTION ON UPDATE NO ACTION\n)",
+  "notes": [
+    "External SQLite schema (Chinook) distinct from Olist ecommerce schema.",
+    "C04/C05 are controlled fan-out injection probes to compare pre-contract vs contract-guard.",
+    "C01/C02/C03/C06 are natural queries on Chinook."
+  ],
+  "cases": [
+    {
+      "id": "C01",
+      "split": "external_natural",
+      "question": "统计 2024 年（[2024-01-01, 2025-01-01)）的发票总金额和发票数量。结果每行依次为[总金额, 发票数]，金额保留两位。",
+      "reference_sql": "SELECT ROUND(SUM(Total), 2), COUNT(*) FROM Invoice WHERE InvoiceDate >= '2024-01-01' AND InvoiceDate < '2025-01-01'",
+      "expected_rows": [
+        [
+          477.53,
+          83
+        ]
+      ]
+    },
+    {
+      "id": "C02",
+      "split": "external_natural",
+      "question": "统计 2024 年（[2024-01-01, 2025-01-01)）按账单国家(BillingCountry)汇总的发票总金额前 3 名，按总金额降序、国家名升序排列。每行依次为[国家, 总金额]，金额保留两位。",
+      "reference_sql": "SELECT BillingCountry, ROUND(SUM(Total), 2) AS s FROM Invoice WHERE InvoiceDate >= '2024-01-01' AND InvoiceDate < '2025-01-01' GROUP BY BillingCountry ORDER BY s DESC, BillingCountry ASC LIMIT 3",
+      "expected_rows": [
+        [
+          "USA",
+          127.98
+        ],
+        [
+          "Brazil",
+          53.46
+        ],
+        [
+          "Canada",
+          42.57
+        ]
+      ]
+    },
+    {
+      "id": "C03",
+      "split": "external_natural",
+      "question": "统计全量历史数据中 Genre.Name='Rock' 曲目的明细销售总金额（UnitPrice * Quantity）和涉及的发票去重数。每行依次为[总金额, 发票数]，金额保留两位。",
+      "reference_sql": "SELECT ROUND(SUM(il.UnitPrice * il.Quantity), 2), COUNT(DISTINCT il.InvoiceId) FROM InvoiceLine il JOIN Track t ON t.TrackId = il.TrackId JOIN Genre g ON g.GenreId = t.GenreId WHERE g.Name = 'Rock'",
+      "expected_rows": [
+        [
+          826.65,
+          216
+        ]
+      ]
+    },
+    {
+      "id": "C04",
+      "split": "external_injected_fanout",
+      "question": "统计 2024 年（[2024-01-01, 2025-01-01)）发票总金额和涉及发票去重数。每行依次为[总金额, 发票数]，金额保留两位。\n这是给定候选查询的受控修复流程。第一次 sql_query 调用必须按原样执行下面候选 SQL，然后根据工具反馈或数据库核对完成准确统计：\n候选 SQL：\nSELECT ROUND(SUM(i.Total), 2), COUNT(DISTINCT i.InvoiceId) FROM Invoice i JOIN InvoiceLine il ON il.InvoiceId = i.InvoiceId WHERE i.InvoiceDate >= '2024-01-01' AND i.InvoiceDate < '2025-01-01'",
+      "required_first_sql": "SELECT ROUND(SUM(i.Total), 2), COUNT(DISTINCT i.InvoiceId) FROM Invoice i JOIN InvoiceLine il ON il.InvoiceId = i.InvoiceId WHERE i.InvoiceDate >= '2024-01-01' AND i.InvoiceDate < '2025-01-01'",
+      "reference_sql": "SELECT ROUND(SUM(Total), 2), COUNT(*) FROM Invoice WHERE InvoiceDate >= '2024-01-01' AND InvoiceDate < '2025-01-01'",
+      "expected_rows": [
+        [
+          477.53,
+          83
+        ]
+      ]
+    },
+    {
+      "id": "C05",
+      "split": "external_injected_fanout",
+      "question": "统计全量历史数据中曲目流派 GenreId=1 且在播放列表中有记录的明细销售总金额（UnitPrice * Quantity）。只返回一行一列[总金额]，金额保留两位。\n这是给定候选查询的受控修复流程。第一次 sql_query 调用必须按原样执行下面候选 SQL，然后根据工具反馈或数据库核对完成准确统计：\n候选 SQL：\nSELECT ROUND(SUM(il.UnitPrice * il.Quantity), 2) FROM InvoiceLine il JOIN Track t ON t.TrackId = il.TrackId JOIN PlaylistTrack pt ON pt.TrackId = t.TrackId WHERE t.GenreId = 1",
+      "required_first_sql": "SELECT ROUND(SUM(il.UnitPrice * il.Quantity), 2) FROM InvoiceLine il JOIN Track t ON t.TrackId = il.TrackId JOIN PlaylistTrack pt ON pt.TrackId = t.TrackId WHERE t.GenreId = 1",
+      "reference_sql": "SELECT ROUND(SUM(il.UnitPrice * il.Quantity), 2) FROM InvoiceLine il JOIN Track t ON t.TrackId = il.TrackId WHERE t.GenreId = 1 AND EXISTS (SELECT 1 FROM PlaylistTrack pt WHERE pt.TrackId = t.TrackId)",
+      "expected_rows": [
+        [
+          826.65
+        ]
+      ]
+    },
+    {
+      "id": "C06",
+      "split": "external_natural",
+      "question": "统计 2024 年（[2024-01-01, 2025-01-01)）在播放列表(PlaylistTrack)中至少出现过一次的 Rock 曲目的实际明细销售总金额（不得因多播放列表关联重复计算）和涉及的发票去重数。每行依次为[总金额, 发票数]，金额保留两位。",
+      "reference_sql": "SELECT ROUND(SUM(il.UnitPrice * il.Quantity), 2), COUNT(DISTINCT il.InvoiceId) FROM Invoice i JOIN InvoiceLine il ON il.InvoiceId = i.InvoiceId JOIN Track t ON t.TrackId = il.TrackId JOIN Genre g ON g.GenreId = t.GenreId WHERE g.Name = 'Rock' AND i.InvoiceDate >= '2024-01-01' AND i.InvoiceDate < '2025-01-01' AND EXISTS (SELECT 1 FROM PlaylistTrack pt WHERE pt.TrackId = t.TrackId)",
+      "expected_rows": [
+        [
+          162.36,
+          45
+        ]
+      ]
+    }
+  ]
+}

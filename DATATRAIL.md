@@ -59,3 +59,9 @@ Copy-Item configs/datatrail.env.example .env.local
 真实 DeepSeek 接口已接通，普通自然语言查询及受控的“错误 JOIN → 复核 → 改写”链路已验证。2026-11-08 完成 20 题、三组受控 SQL 工具实验：基础组按预设口径符合 17/20，强治理提示组 20/20，提示加代码守卫组 20/20；新增守卫没有触发，不能归因额外准确率收益。三题差异包含下单/送达时间的原题歧义。相关回归更新为 **128 项通过**。这不是完整 UI/ReAct Agent 的效果实验，完整多工具链路仍待评测。详见 [对照 v1](examples/commerce_audit/evaluation_v1/README.md)；早期真实模型记录见 [验证记录](examples/commerce_audit/LIVE_MODEL_SMOKE.md)。
 
 本轮浏览器检查通过桌面工作台、390px 窄屏无横向溢出、进入 Agent 后自动带入问题及数据源。更新本地配置后，真实查询返回 2018 年 7 月商品金额 `867953.46`、订单数 `6159`，与参考 SQL 一致；这是一项成功样例，不是自然任务效果统计。
+
+## 外部数据库验证与可配置指标契约（2026-11-13）
+
+- 新增 [commerce_contract.py](packages/dbgpt-app/src/dbgpt_app/commerce_contract.py) 与 `configs/metric_contracts/`（`olist.json`、`chinook.json`），将默认过滤、时间字段及父子表 / 多对多扇出规则从硬编码 Olist 逻辑中解耦。
+- 在外部只读库 `Chinook.sqlite` 的 6 题冻结对照（[external_v1](examples/commerce_audit/external_v1/run_external.py)）中：未配置契约前（`pre_contract`）4/6 正确，两条注入扇出 SQL（`Invoice+InvoiceLine` 累计 `Invoice.Total`、`InvoiceLine+PlaylistTrack` 累计明细）均未被拦截（0/2），两条受控题目因工具轮次后异常失败；加载 `chinook.json` 契约后（`contract_guard`）6/6 正确，两条注入扇出均在执行前被拦截并由模型改写（2/2），4 条自然题（含 `EXISTS` 关联）0 误拦。
+- 此验证仅覆盖 6 题受控外部库样例，不作为任意 SQL 语义正确性证明。

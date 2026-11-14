@@ -1,0 +1,35 @@
+{
+  "dataset_name": "chinook",
+  "currency": "USD",
+  "default_filters": [],
+  "time_contract": {
+    "default_field": "InvoiceDate",
+    "fields": {
+      "invoice": "InvoiceDate"
+    },
+    "other_time_fields": ["HireDate", "BirthDate"],
+    "requires_confirmation": false
+  },
+  "grain_rules": [
+    {
+      "id": "chinook_invoice_invoiceline_fanout",
+      "rule_type": "parent_child_fanout",
+      "left_tables": ["Invoice"],
+      "right_tables": ["InvoiceLine"],
+      "left_amount_columns": ["Total"],
+      "right_amount_columns": [],
+      "allow_unqualified": true,
+      "guidance": "Invoice 与明细表 InvoiceLine 直接关联后累计 Invoice.Total 会按明细行重复计数。请单独汇总 Invoice.Total，或直接统计 InvoiceLine 的 UnitPrice * Quantity。"
+    },
+    {
+      "id": "chinook_invoiceline_playlisttrack_fanout",
+      "rule_type": "sibling_detail_fanout",
+      "left_tables": ["InvoiceLine"],
+      "right_tables": ["PlaylistTrack"],
+      "left_amount_columns": ["UnitPrice", "Quantity"],
+      "right_amount_columns": [],
+      "allow_unqualified": true,
+      "guidance": "InvoiceLine 与多对多关联表 PlaylistTrack 直接关联后累计明细金额，曲目出现在多个播放列表时会导致重复计数。请先按明细聚合，或改用 EXISTS (SELECT 1 FROM PlaylistTrack ...)。"
+    }
+  ]
+}

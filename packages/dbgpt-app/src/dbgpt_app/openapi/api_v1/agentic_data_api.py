@@ -3062,6 +3062,14 @@ async def _react_agent_stream_impl(
   不能冒充当前月份的统计；引用诊断数字时必须同时说明其范围。
 - 将查询事实与业务假设分开；分组金额变化本身不能证明变化原因。
 """
+    if os.environ.get("DATATRAIL_GRAIN_GUARD") == "1" and not dashboard_agent_mode:
+        from dbgpt_app.commerce_contract import resolve_contract_for_database
+
+        metric_contract = resolve_contract_for_database(database_name)
+        if metric_contract is not None:
+            react_state["_commerce_metric_contract"] = metric_contract
+            if database_name != "olist_ecommerce_demo":
+                database_context += "\n" + metric_contract.prompt_summary() + "\n"
     sql_query_tool = make_sql_query(
         react_state,
         database_connector,

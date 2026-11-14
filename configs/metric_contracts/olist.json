@@ -1,0 +1,30 @@
+{
+  "dataset_name": "olist_ecommerce_demo",
+  "currency": "BRL",
+  "default_filters": ["order_status = 'delivered'"],
+  "time_contract": {
+    "default_field": "order_purchase_timestamp",
+    "fields": {
+      "purchase": "order_purchase_timestamp",
+      "delivery": "order_delivered_customer_date"
+    },
+    "other_time_fields": [
+      "order_approved_at",
+      "order_delivered_carrier_date",
+      "order_estimated_delivery_date"
+    ],
+    "requires_confirmation": true
+  },
+  "grain_rules": [
+    {
+      "id": "olist_items_payments_fanout",
+      "rule_type": "sibling_detail_fanout",
+      "left_tables": ["olist_order_items", "order_items"],
+      "right_tables": ["olist_order_payments", "order_payments"],
+      "left_amount_columns": ["price", "freight_value"],
+      "right_amount_columns": ["payment_value"],
+      "allow_unqualified": false,
+      "guidance": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+    }
+  ]
+}

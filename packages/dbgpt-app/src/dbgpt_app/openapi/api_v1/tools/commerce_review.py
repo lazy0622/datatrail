@@ -12,8 +12,9 @@ async def review_commerce_query(state, sql, dialect):
     if temporal:
         review, field = temporal, "time_review"
     elif os.environ.get("DATATRAIL_GRAIN_GUARD") == "1":
+        contract = state.get("_commerce_metric_contract")
         try:
-            review = grain_review(sql, dialect)
+            review = grain_review(sql, dialect, contract=contract)
         except Exception:
             review = {
                 "code": "COMMERCE_SQL_REVIEW_UNAVAILABLE",
