@@ -1,0 +1,47 @@
+{
+  "dataset_name": "bird_student_club",
+  "currency": "USD",
+  "default_filters": [],
+  "time_contract": {
+    "default_field": "event_date",
+    "fields": {
+      "event": "event_date",
+      "expense": "expense_date",
+      "income": "date_received"
+    },
+    "other_time_fields": [],
+    "requires_confirmation": false
+  },
+  "grain_rules": [
+    {
+      "id": "student_club_budget_repeated_by_expenses",
+      "rule_type": "parent_child_fanout",
+      "left_tables": ["budget"],
+      "right_tables": ["expense"],
+      "left_amount_columns": ["amount", "spent", "remaining"],
+      "right_amount_columns": [],
+      "allow_unqualified": false,
+      "guidance": "一个 budget 可以有多条 expense。直接关联后累计 budget 金额会按报销行重复。请先单独汇总 budget，或直接汇总 expense.cost。"
+    },
+    {
+      "id": "student_club_budget_repeated_by_attendance",
+      "rule_type": "parent_child_fanout",
+      "left_tables": ["budget"],
+      "right_tables": ["attendance"],
+      "left_amount_columns": ["amount", "spent", "remaining"],
+      "right_amount_columns": [],
+      "allow_unqualified": false,
+      "guidance": "budget 与 attendance 都挂在 event 下，同时关联后 budget 金额会按出勤人数重复。请分别汇总后再关联。"
+    },
+    {
+      "id": "student_club_member_money_siblings",
+      "rule_type": "sibling_detail_fanout",
+      "left_tables": ["income"],
+      "right_tables": ["expense", "attendance"],
+      "left_amount_columns": ["amount"],
+      "right_amount_columns": ["cost"],
+      "allow_unqualified": false,
+      "guidance": "income、expense、attendance 都是成员下的多行明细，同时关联后金额会重复。请按 member 分别预聚合后再关联。"
+    }
+  ]
+}

@@ -1,0 +1,1135 @@
+{
+  "tier": "synthetic_sql_mutation_and_valid_controls_not_natural_tasks",
+  "model_calls": 0,
+  "source_sha256": "8165fff0f589f97d5ea0cda978a3f02a03f50fc0b1c57746f2a444b3608b8d15",
+  "gate_sha256": "e983f35c7bb7926483bb9022529019adbbb316a294cd8a26ad2b271b214c4b8f",
+  "scenarios": 4,
+  "distinct_sql_cases": 13,
+  "valid_control_observations": 24,
+  "valid_controls_reviewed": 0,
+  "explicit_allocation_observations": 4,
+  "explicit_allocation_reviewed": 4,
+  "incorrect_fixture_rows_not_reviewed": [],
+  "notes": [
+    "Artificial fixtures and supplied SQL; no natural model failure or accuracy gain claim.",
+    "Matching one fixture is not proof that a query is semantically correct.",
+    "A review is conservative feedback, not a proof that the SQL is wrong.",
+    "Both splitting transformations preserve selected order/product/payment totals.",
+    "Valid controls are checked against independent Python and reference SQL on all four fixtures.",
+    "Unqualified columns and partial preaggregation expose unsupported cases; None is not safe."
+  ],
+  "observations": [
+    {
+      "scenario": "base",
+      "case_id": "R01",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "base",
+      "case_id": "R02",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          83.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(p.payment_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "base",
+      "case_id": "R03",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          56.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price + i.freight_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "base",
+      "case_id": "R04",
+      "category": "risky_distinct_amount",
+      "sql": "SELECT SUM(DISTINCT i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          40.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(DISTINCT i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "base",
+      "case_id": "L01",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "base",
+      "case_id": "L02",
+      "category": "valid_control",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "base",
+      "case_id": "L03",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product),SUM(p.payment) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "base",
+      "case_id": "L04",
+      "category": "valid_control",
+      "sql": "SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          2
+        ]
+      ],
+      "actual_rows": [
+        [
+          2
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "base",
+      "case_id": "L05",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product+i.freight) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          56.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "base",
+      "case_id": "L06",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND p.payment_sequential=1",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "base",
+      "case_id": "L07",
+      "category": "explicit_allocation_control",
+      "sql": "WITH t AS (SELECT order_id,SUM(payment_value) total FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.price*p.payment_value/t.total) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id JOIN t ON t.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price * p.payment_value / NULLIF(t.total, 0))",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "base",
+      "case_id": "U01",
+      "category": "unsupported_unqualified_column",
+      "sql": "SELECT SUM(price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "base",
+      "case_id": "U02",
+      "category": "unsupported_partial_preaggregation",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT SUM(i.amount) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.amount)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "R01",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          70.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "R02",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          83.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(p.payment_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "R03",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          79.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price + i.freight_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "R04",
+      "category": "risky_distinct_amount",
+      "sql": "SELECT SUM(DISTINCT i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          40.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(DISTINCT i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "L01",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "L02",
+      "category": "valid_control",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "L03",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product),SUM(p.payment) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "L04",
+      "category": "valid_control",
+      "sql": "SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          2
+        ]
+      ],
+      "actual_rows": [
+        [
+          2
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "L05",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product+i.freight) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          56.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "L06",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND p.payment_sequential=1",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "L07",
+      "category": "explicit_allocation_control",
+      "sql": "WITH t AS (SELECT order_id,SUM(payment_value) total FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.price*p.payment_value/t.total) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id JOIN t ON t.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price * p.payment_value / NULLIF(t.total, 0))",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "U01",
+      "category": "unsupported_unqualified_column",
+      "sql": "SELECT SUM(price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          70.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_payments",
+      "case_id": "U02",
+      "category": "unsupported_partial_preaggregation",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT SUM(i.amount) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          70.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.amount)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "R01",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "R02",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          116.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(p.payment_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "R03",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          56.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price + i.freight_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "R04",
+      "category": "risky_distinct_amount",
+      "sql": "SELECT SUM(DISTINCT i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          40.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(DISTINCT i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "L01",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "L02",
+      "category": "valid_control",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "L03",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product),SUM(p.payment) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "L04",
+      "category": "valid_control",
+      "sql": "SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          2
+        ]
+      ],
+      "actual_rows": [
+        [
+          2
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "L05",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product+i.freight) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          56.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "L06",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND p.payment_sequential=1",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "L07",
+      "category": "explicit_allocation_control",
+      "sql": "WITH t AS (SELECT order_id,SUM(payment_value) total FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.price*p.payment_value/t.total) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id JOIN t ON t.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price * p.payment_value / NULLIF(t.total, 0))",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "U01",
+      "category": "unsupported_unqualified_column",
+      "sql": "SELECT SUM(price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_items",
+      "case_id": "U02",
+      "category": "unsupported_partial_preaggregation",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT SUM(i.amount) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.amount)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "R01",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          70.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "R02",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          116.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(p.payment_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "R03",
+      "category": "risky_raw_join",
+      "sql": "SELECT SUM(i.price+i.freight_value) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          79.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price + i.freight_value)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "R04",
+      "category": "risky_distinct_amount",
+      "sql": "SELECT SUM(DISTINCT i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          40.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(DISTINCT i.price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "L01",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_payments p WHERE p.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "L02",
+      "category": "valid_control",
+      "sql": "SELECT SUM(p.payment_value) FROM olist_orders o JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND EXISTS(SELECT 1 FROM olist_order_items i WHERE i.order_id=o.order_id)",
+      "expected_rows": [
+        [
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "L03",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product),SUM(p.payment) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0,
+          58.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "L04",
+      "category": "valid_control",
+      "sql": "SELECT COUNT(DISTINCT o.order_id) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          2
+        ]
+      ],
+      "actual_rows": [
+        [
+          2
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "L05",
+      "category": "valid_control",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) product,SUM(freight_value) freight FROM olist_order_items GROUP BY order_id), p AS (SELECT order_id,SUM(payment_value) payment FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.product+i.freight) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          56.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          56.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "L06",
+      "category": "valid_control",
+      "sql": "SELECT SUM(i.price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01' AND p.payment_sequential=1",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": null
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "L07",
+      "category": "explicit_allocation_control",
+      "sql": "WITH t AS (SELECT order_id,SUM(payment_value) total FROM olist_order_payments GROUP BY order_id) SELECT SUM(i.price*p.payment_value/t.total) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id JOIN t ON t.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          50.0
+        ]
+      ],
+      "fixture_rows_match": true,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.price * p.payment_value / NULLIF(t.total, 0))",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "U01",
+      "category": "unsupported_unqualified_column",
+      "sql": "SELECT SUM(price) FROM olist_orders o JOIN olist_order_items i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          70.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(price)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    },
+    {
+      "scenario": "split_both",
+      "case_id": "U02",
+      "category": "unsupported_partial_preaggregation",
+      "sql": "WITH i AS (SELECT order_id,SUM(price) amount FROM olist_order_items GROUP BY order_id) SELECT SUM(i.amount) FROM olist_orders o JOIN i ON i.order_id=o.order_id JOIN olist_order_payments p ON p.order_id=o.order_id WHERE o.order_status='delivered' AND o.order_purchase_timestamp>='2018-07-01' AND o.order_purchase_timestamp<'2018-08-01'",
+      "expected_rows": [
+        [
+          50.0
+        ]
+      ],
+      "actual_rows": [
+        [
+          70.0
+        ]
+      ],
+      "fixture_rows_match": false,
+      "gate_review": {
+        "code": "COMMERCE_GRAIN_REVIEW_REQUIRED",
+        "rule_id": "olist_items_payments_fanout",
+        "expression": "SUM(i.amount)",
+        "reason": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。",
+        "next_action": "商品与支付明细直接关联后累计金额，可能重复计数。先明确指标粒度。按 order_id 分别预聚合后关联，或仅为筛选支付存在性使用 EXISTS；不要用 SUM(DISTINCT 金额) 去重。若需要按支付方式分摊商品金额，请先询问分摊口径。该规则要求复核，不表示所有多对多关联都错误。"
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "dataset_name": "bird_financial",
+  "currency": "CZK",
+  "default_filters": [],
+  "time_contract": {
+    "default_field": "date",
+    "fields": {
+      "transaction": "date"
+    },
+    "other_time_fields": ["issued", "birth_date"],
+    "requires_confirmation": false
+  },
+  "grain_rules": [
+    {
+      "id": "financial_loan_repeated_by_account_details",
+      "rule_type": "parent_child_fanout",
+      "left_tables": ["loan"],
+      "right_tables": ["trans", "order"],
+      "left_amount_columns": ["amount", "payments"],
+      "right_amount_columns": [],
+      "allow_unqualified": false,
+      "guidance": "每个账户最多一笔 loan，但有多条 trans/order。直接关联后累计 loan 金额会按明细行重复。请先单独汇总 loan，或用 EXISTS 筛选明细。"
+    },
+    {
+      "id": "financial_trans_order_siblings",
+      "rule_type": "sibling_detail_fanout",
+      "left_tables": ["trans"],
+      "right_tables": ["order"],
+      "left_amount_columns": ["amount", "balance"],
+      "right_amount_columns": ["amount"],
+      "allow_unqualified": false,
+      "guidance": "trans 与 order 都是账户下的多行明细，直接关联后两边金额都会重复。请按 account_id 分别预聚合后再关联。"
+    },
+    {
+      "id": "financial_amount_repeated_by_dispositions",
+      "rule_type": "parent_child_fanout",
+      "left_tables": ["loan", "trans", "order"],
+      "right_tables": ["disp"],
+      "one_row_filters": [{"table": "disp", "column": "type", "value": "OWNER"}],
+      "left_amount_columns": ["amount", "payments", "balance"],
+      "right_amount_columns": [],
+      "allow_unqualified": false,
+      "guidance": "一个账户可以有多个 disp（所有人与授权人）。经 disp 关联客户或卡片后累计账户金额会重复。若只关心账户所有人，请加 disp.type = 'OWNER'，或先确认口径。"
+    }
+  ]
+}

@@ -20,6 +20,15 @@ class TimeContractSpec(BaseModel):
     requires_confirmation: bool = False
 
 
+class OneRowFilter(BaseModel):
+    """Equality filter that leaves at most one row of `table` per join key."""
+
+    model_config = ConfigDict(extra="forbid")
+    table: str = Field(min_length=1)
+    column: str = Field(min_length=1)
+    value: str | int
+
+
 class GrainRule(BaseModel):
     """Declarative fan-out join pattern to review before SQL execution."""
 
@@ -31,6 +40,7 @@ class GrainRule(BaseModel):
     left_amount_columns: list[str] = Field(default_factory=list)
     right_amount_columns: list[str] = Field(default_factory=list)
     allow_unqualified: bool = False
+    one_row_filters: list[OneRowFilter] = Field(default_factory=list)
     guidance: str = Field(min_length=1)
 
 

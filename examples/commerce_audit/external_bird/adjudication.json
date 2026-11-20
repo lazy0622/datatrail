@@ -1,0 +1,8 @@
+[
+  {
+    "question_id": 179,
+    "verdict": "false_review",
+    "note": "The query filters to one client, and every client has exactly one disp row, so each trans row is joined once. The guard cannot see this data-level uniqueness from the SQL.",
+    "rewrite_sql": "SELECT SUM(amount) FROM trans WHERE account_id IN (SELECT account_id FROM disp WHERE client_id = 617) AND STRFTIME('%Y', date) = '1998'"
+  }
+]

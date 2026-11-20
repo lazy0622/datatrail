@@ -57,6 +57,25 @@ def test_chinook_contract_flags_parent_child_and_m2m_fanout_but_allows_exists():
     assert safe_header is None
 
 
+def test_parent_child_contract_only_flags_the_repeated_side_of_a_derived_join():
+    chinook = load_contract("chinook")
+    # Child lines summed per invoice, joined to one parent row: no repetition.
+    child_rollup = grain_review(
+        "WITH l AS (SELECT InvoiceId, SUM(UnitPrice*Quantity) amount "
+        "FROM InvoiceLine GROUP BY InvoiceId) "
+        "SELECT SUM(l.amount) FROM Invoice i JOIN l ON l.InvoiceId=i.InvoiceId",
+        contract=chinook,
+    )
+    assert child_rollup is None
+    # Parent totals carried through a subquery still repeat per raw line.
+    parent_carried = grain_review(
+        "SELECT SUM(h.Total) FROM (SELECT InvoiceId, Total FROM Invoice) h "
+        "JOIN InvoiceLine il ON il.InvoiceId=h.InvoiceId",
+        contract=chinook,
+    )
+    assert parent_carried["rule_id"] == "chinook_invoice_invoiceline_fanout"
+
+
 def test_custom_external_contract_works_without_code_changes(tmp_path, monkeypatch):
     contract_file = tmp_path / "clinic.json"
     contract_file.write_text(

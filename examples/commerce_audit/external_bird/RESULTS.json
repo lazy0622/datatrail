@@ -1,0 +1,65 @@
+{
+  "tier": "external_benchmark_gold_sql_offline_scan",
+  "model_calls": 0,
+  "benchmark": "BIRD dev (dev_20240627)",
+  "dev_json_sha256": "630272f2b1c44d8cef2c3b246f623355cf0bbc1e832c81061df895530dfc2f06",
+  "gate_sha256": "e983f35c7bb7926483bb9022529019adbbb316a294cd8a26ad2b271b214c4b8f",
+  "databases": {
+    "financial": {
+      "contract_sha256": "85021dcb2f207fd7eaaebfe2ad573d22f33161511dfdc847c448e5815d16cd10",
+      "cardinality_checks": {
+        "accounts_with_multiple_disp": 869,
+        "accounts_with_multiple_owner_disp": 0,
+        "accounts_with_multiple_loan": 0,
+        "accounts_with_multiple_trans": 4500,
+        "accounts_with_multiple_order": 1655
+      },
+      "questions": 106,
+      "reviewed": 1,
+      "verdicts": {
+        "false_review": 1
+      },
+      "items": [
+        {
+          "question_id": 179,
+          "question": "How much, in total, did client number 617 pay for all of the transactions in 1998?",
+          "evidence": "",
+          "gold_sql": "SELECT SUM(T3.amount) FROM client AS T1 INNER JOIN disp AS T4 ON T1.client_id = T4.client_id INNER JOIN account AS T2 ON T4.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE STRFTIME('%Y', T3.date)= '1998' AND T1.client_id = 617",
+          "rule_id": "financial_amount_repeated_by_dispositions",
+          "gold_result": [
+            [
+              303276
+            ]
+          ],
+          "verdict": "false_review",
+          "note": "The query filters to one client, and every client has exactly one disp row, so each trans row is joined once. The guard cannot see this data-level uniqueness from the SQL.",
+          "rewrite_sql": "SELECT SUM(amount) FROM trans WHERE account_id IN (SELECT account_id FROM disp WHERE client_id = 617) AND STRFTIME('%Y', date) = '1998'",
+          "rewrite_result": [
+            [
+              303276
+            ]
+          ],
+          "results_differ": false
+        }
+      ]
+    },
+    "student_club": {
+      "contract_sha256": "9cf2b2c921fc5c7a28717ce19404fce24cc0ee88002fa289382dfb271c98a34d",
+      "cardinality_checks": {
+        "budgets_with_multiple_expense": 7,
+        "events_with_multiple_attendance": 17,
+        "members_with_multiple_income": 3,
+        "members_with_multiple_expense": 3
+      },
+      "questions": 158,
+      "reviewed": 0,
+      "verdicts": {},
+      "items": []
+    }
+  },
+  "notes": [
+    "Verdicts are the author's manual reading, not BIRD labels.",
+    "Only SUM is checked; AVG over repeated rows is outside the guard.",
+    "Questions that were not reviewed are not claimed to be correct."
+  ]
+}
