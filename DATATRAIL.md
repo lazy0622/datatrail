@@ -1,6 +1,6 @@
 # DataTrail · 电商经营分析 Agent
 
-基于 [DB-GPT](https://github.com/eosphoros-ai/DB-GPT) 的个人改造项目，固定上游版本为 `9d50d0a55071a040a8cb7684b3b6acfa13cc7c47`。保留原 MIT 许可与版权声明。完整规划见 [PROJECT_OUTLINE.md](PROJECT_OUTLINE.md)。
+基于 [DB-GPT](https://github.com/eosphoros-ai/DB-GPT) 构建的个人项目，固定上游版本为 `9d50d0a55071a040a8cb7684b3b6acfa13cc7c47`。保留原 MIT 许可与版权声明。设计说明见 [DESIGN.md](DESIGN.md)。
 
 当前默认模型为 `deepseek-flash`（官方 V4.1-Flash），显式开启 thinking，使用官方默认 High 推理强度；High 是推理设置，不是模型 ID 后缀。此前 V4 Pro 的运行记录保留为历史观察。
 
