@@ -6,7 +6,7 @@
 
 ## 1. 一句话定位
 
-基于 DB-GPT 二次开发的经营分析助手：将用户的业务问题转成有明确口径的查询和多步分析，结合业务文档，生成可追溯的图表、看板与报告，并记录执行过程、检查计算错误及支持失败复盘。
+基于 DB-GPT 构建的经营分析助手：将用户的业务问题转成有明确口径的查询和多步分析，结合业务文档，生成可追溯的图表、看板与报告，并记录执行过程、检查计算错误及支持失败复盘。
 
 主要用户是运营、经营分析和技术支持人员。目标岗位为 Python 后端、大模型应用和 Agent 开发。
 
@@ -21,8 +21,6 @@
 上游：https://github.com/eosphoros-ai/DB-GPT
 
 固定提交：`9d50d0a55071a040a8cb7684b3b6acfa13cc7c47`。
-
-本地开发：`C:/Users/Administrator/Desktop/agent/commerce-analysis-agent`，分支 `codex/commerce-analysis-agent`。
 
 选择依据：
 
