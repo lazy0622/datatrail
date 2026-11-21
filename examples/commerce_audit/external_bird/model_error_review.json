@@ -1,0 +1,87 @@
+[
+  {
+    "question_id": 129,
+    "repeated_rows_cause": false,
+    "note": "Question asks for district names; the model ranked districts by summed withdrawals. Interpretation, not repeated rows."
+  },
+  {
+    "question_id": 145,
+    "repeated_rows_cause": false,
+    "note": "Model returned client_id via disp and a card-only average; gold returns account_id. Interpretation."
+  },
+  {
+    "question_id": 168,
+    "repeated_rows_cause": false,
+    "note": "Model counted clients by account district; gold uses the client's own district. Interpretation; the model deduplicated clients itself."
+  },
+  {
+    "question_id": 169,
+    "repeated_rows_cause": false,
+    "note": "Model used EXISTS over any male disp; gold restricts to OWNER. Filter choice; the model avoided repeated loan rows itself."
+  },
+  {
+    "question_id": 185,
+    "repeated_rows_cause": false,
+    "note": "Model used account district and LIKE; gold uses client district. Interpretation; deduplicated with DISTINCT."
+  },
+  {
+    "question_id": 1339,
+    "repeated_rows_cause": false,
+    "note": "substr(expense_date, 5, 2) reads the wrong characters, so no rows match. Date parsing error."
+  },
+  {
+    "question_id": 1340,
+    "repeated_rows_cause": false,
+    "note": "Extra filter type = 'Student_Club' matches no events. Filter error."
+  },
+  {
+    "question_id": 1342,
+    "repeated_rows_cause": false,
+    "note": "Looked for the event name instead of the expense description. Wrong table."
+  },
+  {
+    "question_id": 1391,
+    "repeated_rows_cause": false,
+    "note": "Counted members instead of rows in major, and the join returned NULL. Wrong table."
+  },
+  {
+    "question_id": 1404,
+    "repeated_rows_cause": false,
+    "note": "Grouped by budget category and added approved = 'Yes'; gold returns the event type. Interpretation."
+  },
+  {
+    "question_id": 1410,
+    "repeated_rows_cause": false,
+    "note": "Concatenated first and last name into one column; same values. Column format."
+  },
+  {
+    "question_id": 1421,
+    "repeated_rows_cause": false,
+    "note": "Applied position = 'Member' inside the numerator instead of as a filter. Formula placement."
+  },
+  {
+    "question_id": 1453,
+    "repeated_rows_cause": false,
+    "note": "Compared with a parking-only average; gold uses the overall average. Interpretation."
+  },
+  {
+    "question_id": 1454,
+    "repeated_rows_cause": false,
+    "note": "Followed the evidence formula literally (SUM / COUNT events). Interpretation."
+  },
+  {
+    "question_id": 1457,
+    "repeated_rows_cause": false,
+    "note": "Concatenated the name into one column; same members. Column format."
+  },
+  {
+    "question_id": 1458,
+    "repeated_rows_cause": false,
+    "note": "Returned a fraction instead of a percentage. Scale."
+  },
+  {
+    "question_id": 1467,
+    "repeated_rows_cause": false,
+    "note": "Same values with columns in a different order. Column order."
+  }
+]

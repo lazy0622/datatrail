@@ -3,7 +3,8 @@
 This recognizes narrow AST patterns: a contract amount column, or a CTE/subquery
 output derived from one, summed in the same SELECT scope as raw detail rows that
 repeat it. It does not prove arbitrary SQL correct. Intentional allocation still
-requires a human-confirmed metric definition.
+requires a human-confirmed metric definition. AVG is deliberately not checked; see
+examples/commerce_audit/external_bird/README.md.
 """
 
 from typing import TYPE_CHECKING, Optional

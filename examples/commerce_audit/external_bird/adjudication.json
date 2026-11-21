@@ -1,5 +1,17 @@
 [
   {
+    "question_id": 132,
+    "verdict": "false_review",
+    "note": "AVG over loans reached through disp. In this data no loan is joined to more than one male client, so no row repeats; the deduplicated rewrite returns the same value. The SQL alone cannot show this.",
+    "rewrite_sql": "SELECT AVG(amount) FROM loan WHERE account_id IN (SELECT d.account_id FROM disp d JOIN client c ON c.client_id = d.client_id WHERE c.gender = 'M')"
+  },
+  {
+    "question_id": 144,
+    "verdict": "false_review",
+    "note": "AVG over card withdrawals reached through card and disp. No 1998 withdrawal row repeats in this data; the deduplicated rewrite returns the same value. The SQL alone cannot show this.",
+    "rewrite_sql": "SELECT AVG(amount) FROM trans WHERE account_id IN (SELECT d.account_id FROM card k JOIN disp d ON d.disp_id = k.disp_id) AND STRFTIME('%Y', date) = '1998' AND operation = 'VYBER KARTOU'"
+  },
+  {
     "question_id": 179,
     "verdict": "false_review",
     "note": "The query filters to one client, and every client has exactly one disp row, so each trans row is joined once. The guard cannot see this data-level uniqueness from the SQL.",

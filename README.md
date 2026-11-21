@@ -47,12 +47,13 @@ flowchart LR
 | Olist 20 题：基础 / 加治理文档 / 再加代码检查 | 17/20 / 20/20 / 20/20 |
 | Olist 合成扰动 13 条 SQL × 4 个库（离线） | 已知错误漏检 4 条 → 0 条；普通合法查询误报 4/24 → 0/24 |
 | [BIRD](https://bird-bench.github.io/) 开发集 `financial` + `student_club` 共 264 条人工标注 SQL（离线） | 复核 1 条，人工核对为误报，约 0.4% |
+| 同样 264 题由 DeepSeek 自己写 SQL，比较加守卫前后的执行准确率 | 加守卫前后都是 163/264（61.7%）；答错的 101 题里没有重复累加错误，守卫在自然任务上没有提升 |
 | 同一轮 5 次相同 SQL 回放 | 数据库执行从 5 次降到 1 次，结果一致 |
 | 相关回归测试 | 160 项通过 |
 
 Olist 20 题里，提升来自治理文档，代码检查一次都没有触发，所以这组数字不能算作代码检查的贡献。差异的 3 题都是下单时间和送达时间的口径歧义。代码检查的作用要看 Chinook 的注入实验。Olist 和 Chinook 的题都是作者自己编写，样本量小，不代表任意 SQL 的正确性。
 
-BIRD 扫描测的是误报：标准 SQL 里没有这类重复计算，所以测不到拦截收益。BIRD 契约只按表结构和数据基数编写，判定由作者人工完成。细节见 [评测 v1](examples/commerce_audit/evaluation_v1/README.md)、[合成扰动](examples/commerce_audit/grain_challenge_v1/README.md)、[外部库评测](examples/commerce_audit/external_v1/) 和 [BIRD 扫描](examples/commerce_audit/external_bird/README.md)。
+BIRD 扫描测的是误报：标准 SQL 里没有这类重复计算，所以测不到拦截收益。模型自己写 SQL 的实验也没有出现这类错误，说明守卫的价值在已知陷阱和执行前保险，准确率的瓶颈在理解题意和选字段。曾试加 `AVG` 检查，带来 2 条新误报和 1 次答错，已撤回。BIRD 契约只按表结构和数据基数编写，判定由作者人工完成。细节见 [评测 v1](examples/commerce_audit/evaluation_v1/README.md)、[合成扰动](examples/commerce_audit/grain_challenge_v1/README.md)、[外部库评测](examples/commerce_audit/external_v1/) 和 [BIRD 扫描](examples/commerce_audit/external_bird/README.md)。
 
 ## 本地运行
 

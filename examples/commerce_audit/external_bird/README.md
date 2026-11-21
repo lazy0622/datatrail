@@ -35,12 +35,39 @@
 - BIRD 标准 SQL 里没有出现这类重复计算错误，所以这组数据测的是误报，测不到守卫拦截的价值。拦截价值仍以 Chinook 注入实验和 Olist 扰动实验为准。
 - 判定由作者人工完成，不是 BIRD 官方标注。未被复核的题也不代表 SQL 正确。只检查 `SUM`；`AVG` 在重复行上的偏差不在检查范围内。
 
+## 模型自己写 SQL（2026-11-21）
+
+上面的扫描只能测误报。为了回答“守卫在模型真实输出上有没有用”，让 DeepSeek（`deepseek-flash`，思考模式，推理强度 high）为同样 264 道题各写一条 SQL，脚本 [`run_model_bird.py`](run_model_bird.py)，结果 [`MODEL_RESULTS.json`](MODEL_RESULTS.json)。
+
+配对设计：每题只采样一次。不加守卫时直接执行这条 SQL。加守卫时先检查同一条 SQL，被拦下的把守卫提示发回模型，最多改写两次。正确性按 BIRD 执行准确率判定，即结果行集合与标准 SQL 相同。契约和守卫在运行前冻结。
+
+| | financial（106） | student_club（158） | 合计（264） |
+| --- | ---: | ---: | ---: |
+| 不加守卫，执行正确 | 60 | 103 | 163（61.7%） |
+| 加守卫，执行正确 | 59 | 103 | 162 |
+| 守卫拦截 | 1 | 0 | 1 |
+
+唯一一次拦截是 #132，而且拦错了。这次运行的守卫临时加了 `AVG` 检查。模型原本的 SQL 是对的；守卫提示里写着“若只关心账户所有人，请加 `disp.type = 'OWNER'`”，模型照做后改变了统计对象，答案变错。
+
+101 道答错的题里，有 17 道在关联查询上用了 `SUM` 或 `AVG`。逐条看过，没有一道是重复累加造成的，错误来自理解偏差、日期解析、选错表和列格式，见 [`model_error_review.json`](model_error_review.json)。模型还多次自己用 `EXISTS` 或 `DISTINCT` 去重。
+
+结论：
+
+- 在 BIRD 这两个库上，这个模型几乎不犯重复累加错误，守卫在自然任务上没有提高准确率。它的价值仍限于 Chinook 注入和 Olist 扰动这类已知陷阱，以及作为执行前的保险。
+- 守卫的提示会改变模型的答案。提示里给出的具体改法（加 `OWNER`）会被模型当成指令执行，所以提示应当只要求去重，不应建议改变统计口径。这条还没有改，修改后需要另找数据验证。
+- 当前 SQL 准确率的瓶颈是理解题意和选字段，不在聚合粒度。要提高准确率，应该做字段说明和取值示例，而不是继续加粒度规则。
+
+### AVG 检查已撤回
+
+加 `AVG` 后，标准 SQL 扫描的复核从 1 道增加到 3 道（新增 #132、#144，都是误报：在这份数据里没有重复行，去重改写结果相同，见 [`RESULTS-v2-avg.json`](RESULTS-v2-avg.json)），模型 SQL 上没有拦对任何一题，还造成 #132 一次答错。因此撤回 `AVG` 检查，守卫仍只检查 `SUM`。用撤回后的守卫重新检查 264 条模型 SQL，拦截 0 条，即加不加守卫结果相同（163/264）。
+
 ## 复现
 
 下载 BIRD 开发集并解压 `financial.sqlite`、`student_club.sqlite` 和 `dev.json` 到同一目录，然后：
 
 ```powershell
 python examples/commerce_audit/external_bird/scan_bird.py --bird-dir <目录> --output <新文件>
+python examples/commerce_audit/external_bird/run_model_bird.py --bird-dir <目录> --output <新文件>
 ```
 
-脚本拒绝覆盖已有结果，并记录 `dev.json`、契约和守卫源码的 SHA-256。本次结果见 [RESULTS.json](RESULTS.json)。
+脚本拒绝覆盖已有结果，并记录 `dev.json`、契约和守卫源码的 SHA-256。本次结果见 [RESULTS.json](RESULTS.json)。第二个脚本会调用模型，264 道题约 32 万 token。
