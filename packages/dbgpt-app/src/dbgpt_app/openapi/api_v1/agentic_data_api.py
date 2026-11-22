@@ -3086,6 +3086,39 @@ async def _react_agent_stream_impl(
         from .tools.commerce_profile import make_commerce_profile
 
         commerce_tools = [make_commerce_profile(database_connector)]
+    from dbgpt_app.commerce_memory import default_memory
+
+    metric_memory = default_memory()
+    memory_owner = (dialogue.user_name or "").strip()
+    if (
+        metric_memory is not None
+        and database_name
+        and memory_owner
+        and not dashboard_agent_mode
+    ):
+        from dbgpt_app.commerce_contract import resolve_contract_for_database
+
+        from .tools.metric_memory import make_propose_metric_definition
+
+        # Confirmed definitions from earlier sessions; conflicting ones are listed, not applied.
+        database_context += (
+            "\n"
+            + metric_memory.prompt(
+                memory_owner,
+                database_name,
+                resolve_contract_for_database(database_name),
+            )
+            + "\n"
+        )
+        commerce_tools.append(
+            make_propose_metric_definition(
+                metric_memory,
+                memory_owner,
+                database_name,
+                dialogue.conv_uid or "",
+                user_input,
+            )
+        )
     code_interpreter_tool = make_code_interpreter(react_state)
     # Report rendering/provenance is a small capability bundle.  The ReAct loop
     # only composes it; deployments can replace its policy/tool factory without

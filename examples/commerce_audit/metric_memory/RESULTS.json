@@ -1,0 +1,318 @@
+{
+  "statement": "以后我说的 GMV，都按商品金额加运费（price + freight_value）计算，按客户实际收货时间 order_delivered_customer_date 归属月份，只算 order_status='delivered' 的订单。",
+  "model": "deepseek-flash",
+  "session1_attempts": [
+    {
+      "arguments": {
+        "metric": "GMV",
+        "expression": "SUM(price + freight_value)",
+        "time_field": "order_delivered_customer_date",
+        "filters": "order_status='delivered'",
+        "note": "按客户实际收货时间 order_delivered_customer_date 归属月份"
+      },
+      "accepted": true
+    }
+  ],
+  "memory_sections": {
+    "none": "",
+    "memory": "## 用户已确认的指标口径（跨会话记忆）\n用户问到下列指标时按此口径生成 SQL，并在回答中说明使用了哪条记忆：\n- GMV = SUM(price + freight_value)；时间字段 order_delivered_customer_date；过滤 order_status='delivered'（记忆 #1，确认于 2026-11-22，来源会话 probe-session-1）",
+    "other": "",
+    "revoked": ""
+  },
+  "cases": [
+    {
+      "month": "2017-11",
+      "arm": "none",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1153528.05
+        ]
+      ],
+      "expected": [
+        [
+          754773.29
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2017-11-01'\n  AND o.order_purchase_timestamp < '2017-12-01'"
+    },
+    {
+      "month": "2017-11",
+      "arm": "memory",
+      "follows_definition": true,
+      "uses_freight": true,
+      "uses_delivery_time": true,
+      "result": [
+        [
+          754773.29
+        ]
+      ],
+      "expected": [
+        [
+          754773.29
+        ]
+      ],
+      "sql": "SELECT ROUND(COALESCE(SUM(oi.price + oi.freight_value), 0), 2) AS gmv\nFROM olist_order_items oi\nJOIN olist_orders o ON o.order_id = oi.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_delivered_customer_date >= '2017-11-01'\n  AND o.order_delivered_customer_date < '2017-12-01'"
+    },
+    {
+      "month": "2017-11",
+      "arm": "other",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1153528.05
+        ]
+      ],
+      "expected": [
+        [
+          754773.29
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2017-11-01'\n  AND o.order_purchase_timestamp < '2017-12-01'"
+    },
+    {
+      "month": "2017-11",
+      "arm": "revoked",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1153528.05
+        ]
+      ],
+      "expected": [
+        [
+          754773.29
+        ]
+      ],
+      "sql": "WITH order_payments AS (\n    SELECT order_id, SUM(payment_value) AS payment_value\n    FROM olist_order_payments\n    GROUP BY order_id\n)\nSELECT ROUND(SUM(op.payment_value), 2) AS gmv\nFROM olist_orders o\nJOIN order_payments op ON o.order_id = op.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2017-11-01'\n  AND o.order_purchase_timestamp < '2017-12-01'"
+    },
+    {
+      "month": "2018-01",
+      "arm": "none",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          924645.0
+        ]
+      ],
+      "expected": [
+        [
+          993201.05
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(oi.price), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_items oi ON o.order_id = oi.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-01-01 00:00:00'\n  AND o.order_purchase_timestamp < '2018-02-01 00:00:00'"
+    },
+    {
+      "month": "2018-01",
+      "arm": "memory",
+      "follows_definition": true,
+      "uses_freight": true,
+      "uses_delivery_time": true,
+      "result": [
+        [
+          993201.05
+        ]
+      ],
+      "expected": [
+        [
+          993201.05
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS gmv\nFROM olist_order_items oi\nJOIN olist_orders o ON o.order_id = oi.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_delivered_customer_date >= '2018-01-01'\n  AND o.order_delivered_customer_date < '2018-02-01'"
+    },
+    {
+      "month": "2018-01",
+      "arm": "other",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1078606.86
+        ]
+      ],
+      "expected": [
+        [
+          993201.05
+        ]
+      ],
+      "sql": "SELECT ROUND(COALESCE(SUM(p.payment_value), 0), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_payments p\n  ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-01-01'\n  AND o.order_purchase_timestamp < '2018-02-01'"
+    },
+    {
+      "month": "2018-01",
+      "arm": "revoked",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1078606.86
+        ]
+      ],
+      "expected": [
+        [
+          993201.05
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-01-01'\n  AND o.order_purchase_timestamp < '2018-02-01'"
+    },
+    {
+      "month": "2018-03",
+      "arm": "none",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1120678.0
+        ]
+      ],
+      "expected": [
+        [
+          1043575.5
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-03-01'\n  AND o.order_purchase_timestamp < '2018-04-01'"
+    },
+    {
+      "month": "2018-03",
+      "arm": "memory",
+      "follows_definition": true,
+      "uses_freight": true,
+      "uses_delivery_time": true,
+      "result": [
+        [
+          1043575.5
+        ]
+      ],
+      "expected": [
+        [
+          1043575.5
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_delivered_customer_date >= '2018-03-01'\n  AND o.order_delivered_customer_date < '2018-04-01'"
+    },
+    {
+      "month": "2018-03",
+      "arm": "other",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1120678.0
+        ]
+      ],
+      "expected": [
+        [
+          1043575.5
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(p.payment_value), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_payments p ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-03-01'\n  AND o.order_purchase_timestamp < '2018-04-01'"
+    },
+    {
+      "month": "2018-03",
+      "arm": "revoked",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          953356.25
+        ]
+      ],
+      "expected": [
+        [
+          1043575.5
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(oi.price), 2) AS gmv\nFROM olist_order_items oi\nJOIN olist_orders o\n  ON o.order_id = oi.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-03-01'\n  AND o.order_purchase_timestamp < '2018-04-01'"
+    },
+    {
+      "month": "2018-05",
+      "arm": "none",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1128836.69
+        ]
+      ],
+      "expected": [
+        [
+          1170436.47
+        ]
+      ],
+      "sql": "WITH order_payment AS (\n  SELECT order_id, SUM(payment_value) AS order_gmv\n  FROM olist_order_payments\n  GROUP BY order_id\n)\nSELECT ROUND(SUM(op.order_gmv), 2) AS gmv\nFROM olist_orders o\nJOIN order_payment op ON op.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-05-01'\n  AND o.order_purchase_timestamp < '2018-06-01'"
+    },
+    {
+      "month": "2018-05",
+      "arm": "memory",
+      "follows_definition": true,
+      "uses_freight": true,
+      "uses_delivery_time": true,
+      "result": [
+        [
+          1170436.47
+        ]
+      ],
+      "expected": [
+        [
+          1170436.47
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(oi.price + oi.freight_value), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_items oi ON oi.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_delivered_customer_date >= '2018-05-01'\n  AND o.order_delivered_customer_date < '2018-06-01'"
+    },
+    {
+      "month": "2018-05",
+      "arm": "other",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1128836.69
+        ]
+      ],
+      "expected": [
+        [
+          1170436.47
+        ]
+      ],
+      "sql": "SELECT ROUND(SUM(pay.total_payment_value), 2) AS gmv\nFROM olist_orders AS o\nJOIN (\n    SELECT order_id, SUM(payment_value) AS total_payment_value\n    FROM olist_order_payments\n    GROUP BY order_id\n) AS pay\n    ON pay.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-05-01'\n  AND o.order_purchase_timestamp < '2018-06-01'"
+    },
+    {
+      "month": "2018-05",
+      "arm": "revoked",
+      "follows_definition": false,
+      "uses_freight": false,
+      "uses_delivery_time": false,
+      "result": [
+        [
+          1128836.69
+        ]
+      ],
+      "expected": [
+        [
+          1170436.47
+        ]
+      ],
+      "sql": "SELECT ROUND(COALESCE(SUM(p.payment_value), 0), 2) AS gmv\nFROM olist_orders o\nJOIN olist_order_payments p\n  ON p.order_id = o.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2018-05-01'\n  AND o.order_purchase_timestamp < '2018-06-01'"
+    }
+  ],
+  "summary": {
+    "none": "0/4",
+    "memory": "4/4",
+    "other": "0/4",
+    "revoked": "0/4"
+  }
+}
